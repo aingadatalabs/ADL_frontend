@@ -1,0 +1,25 @@
+.footer-socials {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #78877f;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+}
+
+.footer-socials > div {
+  display: flex;
+  gap: 14px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.footer-socials a {
+  color: #b9e4c9;
+}
+
+@media (max-width: 800px) {
+  .footer-socials > div {
+    flex-wrap: wrap;
+  }
+}
