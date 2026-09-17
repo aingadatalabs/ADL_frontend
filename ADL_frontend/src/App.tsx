@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import './footer.css'
+import xLogo from './assets/x.webp'
+import youtubeLogo from './assets/youtube.png'
+import githubLogo from './assets/github.png'
+import redditLogo from './assets/reddit.webp'
 
 const pipelineNodes = [
   { id: 'ingest', label: 'INGEST', name: 'Market sources', metric: '3', schema: 'source.v2', fields: 'symbol, venue, timestamp' },
@@ -108,7 +112,7 @@ export default function App() {
       <section className="case-section"><div className="section-heading"><p className="eyebrow">Selected work</p><h2>Small teams.<br /><em>Outsized leverage.</em></h2><a className="text-link" href="#contact">View all projects <span>-&gt;</span></a></div><div className="case-grid"><article><span>01 / RETAIL</span><h3>One source of truth for a multi-channel operator.</h3><strong>−42% <small>time spent on weekly reporting</small></strong></article><article><span>02 / FINANCE</span><h3>A market data API built for speed and scrutiny.</h3><strong>99.99% <small>delivery reliability in production</small></strong></article><article><span>03 / LOGISTICS</span><h3>Live visibility across a fragmented supply chain.</h3><strong>3.2x <small>faster exception resolution</small></strong></article></div></section>
 
       <section className="cta-section" id="contact"><p className="eyebrow">Have a messy data problem?</p><h2>Let’s make it<br /><em>useful.</em></h2><a className="button button-primary" href="mailto:hello@aingadatalabs.com">Start a technical discovery <span aria-hidden="true">-&gt;</span></a></section>
-      <footer className="footer"><div><a className="brand" href="#top"><span className="brand-mark">ADL</span><span>Ainga Data Labs</span></a><p>Engineering clarity into complex data.</p></div><div className="footer-contact"><span>Have a system in mind?</span><a href="mailto:hello@aingadatalabs.com">hello@aingadatalabs.com <span>-&gt;</span></a></div><div className="footer-socials"><span>Social ecosystem</span><div><a href="https://x.com/home" target="_blank" rel="noreferrer">X</a><a href="https://youtube.com/@aingadatalabs" target="_blank" rel="noreferrer">YouTube</a><a href="https://github.com/organizations/aingadatalabs/settings/domains" target="_blank" rel="noreferrer">GitHub</a><a href="https://www.linkedin.com/in/nimrode-ainga-3b9394434/" target="_blank" rel="noreferrer">LinkedIn</a></div></div><span className="footer-meta">Ainga Data Labs / 2026</span></footer>
+      <footer className="footer"><div><a className="brand" href="#top"><span className="brand-mark">ADL</span><span>Ainga Data Labs</span></a><p>Engineering clarity into complex data.</p></div><div className="footer-contact"><span>Have a system in mind?</span><a href="https://mail.google.com/mail/?view=cm&fs=1&to=hello%40aingadatalabs.com" target="_blank" rel="noreferrer">hello@aingadatalabs.com <span>-&gt;</span></a></div><div className="footer-socials"><span>Social ecosystem</span><div><a href="https://x.com/aingadatalabs" target="_blank" rel="noreferrer" aria-label="X"><img src={xLogo} alt="" /></a><a href="https://youtube.com/@aingadatalabs" target="_blank" rel="noreferrer" aria-label="YouTube"><img src={youtubeLogo} alt="" /></a><a href="https://github.com/aingadatalabs" target="_blank" rel="noreferrer" aria-label="GitHub"><img src={githubLogo} alt="" /></a><a href="https://www.reddit.com/user/aingadatalabs/" target="_blank" rel="noreferrer" aria-label="Reddit"><img src={redditLogo} alt="" /></a></div></div><span className="footer-meta">Ainga Data Labs / 2026</span></footer>
     </main>
   )
 }

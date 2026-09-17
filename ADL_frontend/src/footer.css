@@ -18,6 +18,14 @@
   color: #b9e4c9;
 }
 
+.footer-socials img {
+  display: block;
+  width: 14px;
+  height: 14px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
 @media (max-width: 800px) {
   .footer-socials > div {
     flex-wrap: wrap;
