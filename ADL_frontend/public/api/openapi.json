@@ -1,0 +1,53 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ADL Demo API",
+    "version": "0.1.0",
+    "description": "A same-origin interface demo backed by representative JSON fixtures. It is not a production data service. Use the relative /api base path when integrating this demo."
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/v1/markets/quotes": {
+      "get": {
+        "summary": "Market snapshot",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "NVDA" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Representative market quote",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/v1/companies/{ticker}/fundamentals": {
+      "get": {
+        "summary": "Company fundamentals",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "example": "NVDA" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Representative company fundamentals",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    }
+  }
+}
