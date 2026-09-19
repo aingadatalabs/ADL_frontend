@@ -1,51 +1,134 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "ADL Demo API",
+    "title": "Ainga Data Labs — Interactive API",
     "version": "0.1.0",
-    "description": "A same-origin interface demo backed by representative JSON fixtures. It is not a production data service. Use the relative /api base path when integrating this demo."
+    "description": "Production specification and interactive demo contract for Ainga Data Labs pipeline endpoints.",
+    "contact": {
+      "name": "ADL Engineering",
+      "email": "hello@aingadatalabs.com"
+    }
   },
   "servers": [
     {
-      "url": "/api"
+      "url": "/api",
+      "description": "Same-origin API base path"
     }
+  ],
+  "tags": [
+    { "name": "Markets", "description": "Market quotes and real-time pricing feeds" },
+    { "name": "Companies", "description": "Corporate fundamentals and financial metrics" }
   ],
   "paths": {
     "/v1/markets/quotes": {
       "get": {
+        "tags": ["Markets"],
         "summary": "Market snapshot",
+        "description": "Retrieve a normalized price quote snapshot for a given market symbol.",
+        "operationId": "getMarketQuote",
         "parameters": [
           {
             "name": "symbol",
             "in": "query",
             "required": true,
+            "description": "Target ticker symbol (e.g., NVDA, AAPL)",
             "schema": { "type": "string", "example": "NVDA" }
           }
         ],
         "responses": {
           "200": {
-            "description": "Representative market quote",
-            "content": { "application/json": { "schema": { "type": "object" } } }
-          }
+            "description": "Representative market quote record",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MarketQuote" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/400BadRequest" },
+          "429": { "$ref": "#/components/responses/429RateLimited" }
         }
       }
     },
     "/v1/companies/{ticker}/fundamentals": {
       "get": {
+        "tags": ["Companies"],
         "summary": "Company fundamentals",
+        "description": "Retrieve normalized corporate fundamentals and key revenue metrics.",
+        "operationId": "getCompanyFundamentals",
         "parameters": [
           {
             "name": "ticker",
             "in": "path",
             "required": true,
+            "description": "Public company ticker symbol",
             "schema": { "type": "string", "example": "NVDA" }
           }
         ],
         "responses": {
           "200": {
-            "description": "Representative company fundamentals",
-            "content": { "application/json": { "schema": { "type": "object" } } }
-          }
+            "description": "Representative company fundamentals record",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CompanyFundamentals" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/404NotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MarketQuote": {
+        "type": "object",
+        "required": ["symbol", "price", "currency", "as_of", "source"],
+        "properties": {
+          "symbol": { "type": "string", "example": "NVDA" },
+          "price": { "type": "number", "format": "float", "example": 177.0 },
+          "currency": { "type": "string", "example": "USD" },
+          "as_of": { "type": "string", "format": "date-time", "example": "2026-09-05T14:32:01Z" },
+          "source": { "type": "string", "example": "consolidated" },
+          "mode": { "type": "string", "example": "representative" }
+        }
+      },
+      "CompanyFundamentals": {
+        "type": "object",
+        "required": ["ticker", "revenue_ttm", "gross_margin", "period", "lineage_id"],
+        "properties": {
+          "ticker": { "type": "string", "example": "NVDA" },
+          "revenue_ttm": { "type": "integer", "format": "int64", "example": 188300000000 },
+          "gross_margin": { "type": "number", "format": "float", "example": 0.716 },
+          "period": { "type": "string", "example": "FY2026" },
+          "lineage_id": { "type": "string", "example": "ln_7e9a20" }
+        }
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "required": ["error", "detail"],
+        "properties": {
+          "error": { "type": "string", "example": "Invalid request" },
+          "detail": { "type": "string", "example": "The requested parameter was missing or malformed." }
+        }
+      }
+    },
+    "responses": {
+      "400BadRequest": {
+        "description": "Invalid query or path parameter",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+        }
+      },
+      "404NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+        }
+      },
+      "429RateLimited": {
+        "description": "Demo rate limit exceeded",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
         }
       }
     }

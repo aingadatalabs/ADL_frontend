@@ -1,75 +1,65 @@
-# React + TypeScript + Vite
+# Ainga Data Labs — Frontend Application (`ADL_frontend`)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Production-ready web platform and interactive API playground for **Ainga Data Labs (ADL)**. Built with React 19, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠 Tech Stack
 
-## React Compiler
+* **Core Framework:** React 19 (`react`, `react-dom`)
+* **Type System:** TypeScript (Strict mode, ES2023, Project References)
+* **Build Tooling:** Vite v8 with `@tailwindcss/vite` (Tailwind CSS v4)
+* **Linting & Quality:** ESLint 9 (Flat Config)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
+* **Node.js:** `v20.x` or higher
+* **Package Manager:** `npm` (v10+)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Installation & Local Development
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1. **Install dependencies:**
+   ```bash
+   npm install
+Start the local development server:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Bash
+npm run dev
+Access the app locally at http://localhost:5173/.
 
-```
+Type-check and build for production:
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Bash
+npm run build
+Preview production build locally:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Bash
+npm run preview
+📁 Project Architecture
+Plaintext
+ADL_frontend/
+├── public/              # Static public assets (favicon.png, icons)
+│   ├── api/             # Local API demo JSON mock fixtures
+│   └── favicon.png      # ADL Brand Favicon
+├── src/
+│   ├── assets/          # Static media, icons, and image assets
+│   ├── services/        # API client modules and data fetchers
+│   ├── types/           # Core TypeScript type contracts & interfaces
+│   ├── App.tsx          # Main application router and view views
+│   ├── main.tsx         # Application entry point & DOM mount
+│   └── index.css        # Global styles & Tailwind directives
+├── index.html           # HTML template & head metadata
+├── vite.config.ts       # Vite bundler & Tailwind v4 plugin config
+├── tsconfig.json        # Root TypeScript orchestration config
+├── tsconfig.app.json    # Application TypeScript configuration
+└── tsconfig.node.json   # Tooling & build script TypeScript configuration
+🧪 Interactive API Playground & Docs
+Landing Page: / — Modular pipeline preview, catalog grid, case study, and API console.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+API Documentation: /docs — Endpoint parameters, sample request code generator (cURL, Python HTTPX, JS), and response previewer.
 
-```
+📄 License
+Proprietary — All rights reserved © Ainga Data Labs.

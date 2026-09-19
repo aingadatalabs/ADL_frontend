@@ -4,6 +4,7 @@
   "gross_margin": 0.716,
   "period": "FY2026",
   "lineage_id": "ln_7e9a20",
-  "source": "ADL demo fixture",
-  "mode": "representative"
+  "source": "ADL_FINANCIAL_FEED",
+  "mode": "representative",
+  "updated_at": "2026-09-05T00:00:00Z"
 }

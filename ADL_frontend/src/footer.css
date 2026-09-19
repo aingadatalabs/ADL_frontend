@@ -1,33 +1,51 @@
+/* ==========================================================================
+   Footer Social Links & Icon Matrix
+   ========================================================================== */
 .footer-socials {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  color: #78877f;
-  font-family: 'DM Mono', monospace;
+  color: var(--text-muted, #78877f);
+  font-family: var(--font-mono, 'DM Mono', monospace);
   font-size: 10px;
 }
 
 .footer-socials > div {
   display: flex;
+  align-items: center;
   gap: 14px;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
 }
 
 .footer-socials a {
-  color: #b9e4c9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan, #b9e4c9);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.footer-socials a:hover,
+.footer-socials a:focus-visible {
+  opacity: 0.8;
+  transform: translateY(-1px);
+  outline: none;
 }
 
 .footer-socials img {
   display: block;
   width: 14px;
   height: 14px;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 3px;
 }
 
+/* Responsive Overrides */
 @media (max-width: 800px) {
   .footer-socials > div {
     flex-wrap: wrap;
+    gap: 10px;
   }
 }
