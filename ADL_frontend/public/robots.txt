@@ -1,0 +1,19 @@
+# ============================================================================
+# ADL (Ainga Data Labs) Robots Configuration
+# ============================================================================
+
+User-agent: *
+Allow: /
+Allow: /products
+Allow: /services
+Allow: /work
+Allow: /insights
+Allow: /docs
+Allow: /contact
+
+# Prevent crawling of internal API fixtures and assets
+Disallow: /api/
+Disallow: /*.json$
+
+# Sitemap Directive (Replace with production domain)
+Sitemap: https://aingadatalabs.com/sitemap.xml

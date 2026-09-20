@@ -1,4 +1,4 @@
-import { useEffect, useState, type JSX } from 'react'
+import { useState, type JSX } from 'react'
 import './footer.css'
 import xLogo from './assets/x.webp'
 import youtubeLogo from './assets/youtube.png'
@@ -6,8 +6,245 @@ import githubLogo from './assets/github.png'
 import redditLogo from './assets/reddit.webp'
 
 // ============================================================================
-// Types & Contracts
+// 1. DATA CONTRACTS & SCHEMAS
 // ============================================================================
+
+const PRODUCTS_DATA = [
+  {
+    id: 'ssip',
+    category: 'COMMERCE / 001',
+    name: 'SSIP — Shopify Supplements Intelligence Pipeline',
+    tagline: 'E-commerce product catalog, inventory tracking, and pricing dynamics engine.',
+    description: 'An automated pipeline that monitors e-commerce storefronts, normalizing SKU catalogs, variant adjustments, and real-time stock movements into structured data feeds.',
+    inputs: 'Shopify Storefront API / Public Storefront Web Surfaces',
+    outputs: 'Parquet / SQLite / JSON API Payload',
+    architecture: ['INGESTION', 'NORMALIZATION', 'SNAPSHOTS', 'PRICING INTELLIGENCE'],
+    status: 'PRODUCTION READY',
+  },
+  {
+    id: 'hip',
+    category: 'PROPERTY / 002',
+    name: 'HIP — Housing Intelligence Pipeline',
+    tagline: 'Real estate listing aggregator, deduplication engine, and neighborhood price signal tracker.',
+    description: 'Extracts fragmented property listings across major platforms in East Africa, executes automated deduplication, and generates neighborhood supply and price trend metrics.',
+    inputs: 'Property Portals / Public Real Estate Surfaces',
+    outputs: 'Normalized Listings DB / Analytics API',
+    architecture: ['PROPERTY INGEST', 'DEDUPLICATE', 'NORMALIZE', 'ENRICH', 'PRICE SIGNALS'],
+    status: 'PRODUCTION READY',
+  },
+  {
+    id: 'lead-gen',
+    category: 'GROWTH / 003',
+    name: 'Lead Generation Engines',
+    tagline: 'Automated target acquisition, enrichment, and contact validation systems.',
+    description: 'Custom web crawler pipelines that ingest domain profiles, discover key business contacts, execute verification checks, and deliver enriched lead records.',
+    inputs: 'Domain Directories / Registry Data / Public Web Data',
+    outputs: 'Enriched CSV / PostgreSQL / Webhook Alerts',
+    architecture: ['CRAWL', 'EXTRACT', 'VERIFY', 'ENRICH', 'DELIVER'],
+    status: 'ACTIVE MODULE',
+  },
+  {
+    id: 'data-actors',
+    category: 'AUTOMATION / 004',
+    name: 'Data Actors',
+    tagline: 'Reusable, micro-task collection and processing execution agents.',
+    description: 'Decoupled scraping and parsing units built to run on scheduled schedules, managing proxy rotation, anti-bot handling, and schema drift detection automatically.',
+    inputs: 'Target URL Streams / Webhooks',
+    outputs: 'Typed JSON Records / Parquet Bundles',
+    architecture: ['TRIGGER', 'PROXY ROTATE', 'PARSE', 'SCHEMA VALIDATE'],
+    status: 'ACTIVE MODULE',
+  },
+  {
+    id: 'coming-soon',
+    category: 'R&D / 005',
+    name: 'More Products — In Active Development',
+    tagline: 'Next-generation data infrastructure modules currently in internal testing.',
+    description: 'We are actively expanding our portfolio with LLM-powered schema synthesis, automated competitor alert systems, and zero-latency data stream bridges.',
+    inputs: 'Custom Enterprise Datasets',
+    outputs: 'REST / GraphQL / Streaming Protocols',
+    architecture: ['RESEARCH', 'PROTOTYPE', 'BENCHMARK', 'SHIP'],
+    status: 'COMING SOON',
+  },
+] as const
+
+const SERVICES_DATA = [
+  {
+    category: 'DATA INFRASTRUCTURE',
+    badge: '01 / INFRA',
+    summary: 'Dependable data backbone and pipeline engineering.',
+    items: [
+      { title: 'Data infrastructure company', desc: 'Managed, scalable data infrastructure engineered for continuous availability.' },
+      { title: 'Data pipeline development', desc: 'Custom pipeline architectures designed around your team’s internal data sources.' },
+      { title: 'ETL pipeline services', desc: 'High-throughput extract, transform, and load workflows with automated monitoring.' },
+      { title: 'Data engineering services', desc: 'Medallion architectures (Bronze, Silver, Gold) built using DuckDB, SQLite, and Parquet.' },
+    ],
+  },
+  {
+    category: 'WEB DATA',
+    badge: '02 / EXTRACTION',
+    summary: 'Automated web collection turning changing surfaces into structured data.',
+    items: [
+      { title: 'Web scraping services', desc: 'Reliable web scrapers designed to bypass anti-bot mechanisms and schema drifts.' },
+      { title: 'Web data extraction', desc: 'Clean extraction pipelines outputting validated JSON, Parquet, and relational records.' },
+      { title: 'Website data pipeline', desc: 'Scheduled extraction pipelines delivering fresh web data straight to your warehouse.' },
+      { title: 'Automated web data collection', desc: 'Zero-babysitting automated crawlers running on dedicated scheduling infrastructure.' },
+    ],
+  },
+  {
+    category: 'INTELLIGENCE',
+    badge: '03 / ANALYTICS',
+    summary: 'Decision-ready market, competitive, and pricing signals.',
+    items: [
+      { title: 'Market intelligence data', desc: 'Deep market visibility aggregated across scattered industry datasets.' },
+      { title: 'Competitive intelligence data', desc: 'Automated tracking of competitor movements, catalog additions, and strategy shifts.' },
+      { title: 'Pricing intelligence', desc: 'Real-time price trend detection, discount monitoring, and margin tracking.' },
+      { title: 'Real estate market data', desc: 'Property and rental intelligence tracking supply and pricing across key regions.' },
+    ],
+  },
+  {
+    category: 'API DEVELOPMENT',
+    badge: '04 / DELIVERY',
+    summary: 'Typed, high-performance data delivery interfaces.',
+    items: [
+      { title: 'Data API', desc: 'Production REST and GraphQL APIs returning clean, schema-validated payloads.' },
+      { title: 'Real estate data API', desc: 'Structured endpoint for querying rental market signals and listing data.' },
+      { title: 'Product intelligence API', desc: 'E-commerce API delivering normalized catalog, variant, and SKU telemetry.' },
+      { title: 'Market data API', desc: 'Low-latency financial and commodity quotes served through typed schemas.' },
+    ],
+  },
+] as const
+
+const WORK_RESULTS_METRICS = [
+  { metric: '20,078+', label: 'Product Records Extracted', detail: 'Across 56 e-commerce storefronts' },
+  { metric: '99.8%', label: 'Pipeline Uptime SLA', detail: 'Zero-babysitting automated orchestration' },
+  { metric: '12ms', label: 'Transform Latency', detail: 'In-memory DuckDB transformation budget' },
+  { metric: '100%', label: 'Schema Validation Rate', detail: 'Typed contracts across Bronze, Silver, & Gold' },
+] as const
+
+const CASE_STUDIES_DATA = [
+  {
+    id: 'sip',
+    title: 'Shopify Supplements Intelligence Pipeline (SSIP)',
+    badge: 'COMMERCE / CASE STUDY 001',
+    summary: 'Automated catalog & pricing intelligence across supplement & wellness stores.',
+    problem: 'Fragmented merchant storefronts made manual competitor price tracking and product catalog audits impossible at scale.',
+    approach: 'Engineered an asynchronous multi-store web data extraction and schema normalization pipeline storing temporal snapshots.',
+    systemBuilt: 'Multi-tenant scraper engine connected to a Medallion architecture (Bronze JSON → Silver DuckDB → Gold SQLite/Parquet).',
+    execution: 'Scaled source coverage from 6 to 56 active supplement stores with zero manual pipeline intervention.',
+    results: [
+      'Storefront coverage expanded from 6 to 56 active merchants.',
+      'Catalog records grew from 1,729 to 20,078 normalized products.',
+      '100% automated daily refresh rate with zero-babysitting maintenance.',
+    ],
+    techStack: ['Python', 'HTTPX', 'Playwright', 'DuckDB', 'SQLite', 'Parquet', 'FastAPI'],
+  },
+  {
+    id: 'hip',
+    title: 'Housing Intelligence Pipeline (HIP)',
+    badge: 'PROPERTY / CASE STUDY 002',
+    summary: 'Real estate listing aggregator and neighborhood price signal tracker.',
+    problem: 'Duplicate listings and unstructured location data across multiple Kenyan real estate portals obscured actual rental market signals.',
+    approach: 'Implemented entity resolution and string deduplication algorithms over unstandardized listing feeds.',
+    systemBuilt: 'Automated extraction pipeline outputting standardized neighborhood price, supply, and vacancy metrics via REST API.',
+    execution: 'Ingested raw listings across Nairobi portals, filtered duplicate entries, and produced clean price trends.',
+    results: [
+      'Deduplicated over 12,000 raw property listings down to distinct records.',
+      'Extracted price trend signals across 28 neighborhood zones.',
+      'Reduced market analysis latency from days to sub-second API queries.',
+    ],
+    techStack: ['Python', 'BeautifulSoup', 'Selenium', 'DuckDB', 'PostgreSQL', 'OpenAPI'],
+  },
+  {
+    id: 'lead-gen',
+    title: 'Automated Lead Generation & Enrichment Engine',
+    badge: 'GROWTH / CASE STUDY 003',
+    summary: 'Automated B2B lead acquisition, validation, and profile enrichment system.',
+    problem: 'Manual lead prospecting resulted in stale contact details, low conversion rates, and high manual research overhead.',
+    approach: 'Built autonomous Data Actors that extract business profiles, execute SMTP checks, and enrich contact metadata.',
+    systemBuilt: 'Decoupled worker nodes orchestrated via queue handlers delivering verified profiles into PostgreSQL.',
+    execution: 'Processed target domain registries automatically with automated anti-bot and proxy management.',
+    results: [
+      'Increased qualified lead delivery volume by 400%.',
+      'Achieved a 94.2% email bounce-free verification rate.',
+      'Eliminated 15+ hours of manual prospecting per week.',
+    ],
+    techStack: ['Python', 'Docker', 'HTTPX', 'PostgreSQL', 'Redis', 'Webhooks'],
+  },
+] as const
+
+const INSIGHTS_CATEGORIES = [
+  { id: 'all', label: 'All Insights' },
+  { id: 'reports', label: 'Reports' },
+  { id: 'studies', label: 'Data Studies' },
+  { id: 'observations', label: 'Observations' },
+  { id: 'methodologies', label: 'Methodologies' },
+  { id: 'upcoming', label: 'Upcoming Blogs' },
+] as const
+
+type InsightCategory = (typeof INSIGHTS_CATEGORIES)[number]['id']
+
+const INSIGHTS_DATA = [
+  {
+    id: 'report-001',
+    category: 'reports',
+    badge: 'REPORT / 001',
+    title: 'E-Commerce Catalog Dynamics & Price Volatility Benchmark',
+    readTime: '8 min read',
+    date: 'SEPTEMBER 2026',
+    summary: 'An empirical report tracking price drift, stock availability, and SKU changes across 56 e-commerce supplement storefronts.',
+    topics: ['Price Elasticity', 'Shopify Intelligence', 'Catalog Snapshots'],
+  },
+  {
+    id: 'study-001',
+    category: 'studies',
+    badge: 'DATA STUDY / 001',
+    title: 'Nairobi Rental Market Yields & Neighborhood Supply Signals',
+    readTime: '12 min read',
+    date: 'AUGUST 2026',
+    summary: 'Analyzing over 12,000 property listings to surface real listing duration, deduplication rates, and localized price-per-square-meter trends.',
+    topics: ['Housing Intelligence', 'Entity Resolution', 'Real Estate APIs'],
+  },
+  {
+    id: 'methodology-001',
+    category: 'methodologies',
+    badge: 'METHODOLOGY / 001',
+    title: 'Medallion Data Architecture with DuckDB, SQLite & Parquet',
+    readTime: '10 min read',
+    date: 'AUGUST 2026',
+    summary: 'A complete architectural walkthrough of structuring web extraction data into Bronze (raw JSON), Silver (DuckDB SQL transforms), and Gold (serving APIs) layers.',
+    topics: ['Data Engineering', 'DuckDB', 'Parquet', 'ETL Pipelines'],
+  },
+  {
+    id: 'observation-001',
+    category: 'observations',
+    badge: 'OBSERVATION / 001',
+    title: 'Handling Anti-Bot Mechanisms & Schema Drift at Scale',
+    readTime: '6 min read',
+    date: 'JULY 2026',
+    summary: 'Field notes on proxy pool orchestration, browser automation resilience, and automated schema validation techniques for long-running web scrapers.',
+    topics: ['Web Scraping', 'Automation Agents', 'Proxy Management'],
+  },
+  {
+    id: 'upcoming-001',
+    category: 'upcoming',
+    badge: 'UPCOMING BLOG',
+    title: 'Building Zero-Babysitting Web Extraction Pipelines',
+    readTime: 'Coming Soon',
+    date: 'Q4 2026',
+    summary: 'How ADL automates error recovery, alerting budgets, and data contract testing for mission-critical web intelligence pipelines.',
+    topics: ['Pipeline Reliability', 'Data Contracts', 'Async Python'],
+  },
+  {
+    id: 'upcoming-002',
+    category: 'upcoming',
+    badge: 'UPCOMING BLOG',
+    title: 'Designing High-Throughput REST APIs over Embedded Parquet Databases',
+    readTime: 'Coming Soon',
+    date: 'Q4 2026',
+    summary: 'Sub-millisecond query execution patterns for serving normalized market datasets directly to client platforms.',
+    topics: ['API Engineering', 'DuckDB', 'FastAPI'],
+  },
+] as const
 
 const PIPELINE_NODES = [
   { id: 'ingest', label: 'INGEST', name: 'Market sources', metric: '3', schema: 'source.v2', fields: 'symbol, venue, timestamp', payload: 'GET /sources/market?region=global', latency: 'Awaiting source response' },
@@ -24,501 +261,592 @@ const ENDPOINT_SAMPLES = {
     path: '/v1/markets/quotes?symbol=NVDA',
     requestPath: '/api/v1/markets/quotes.json?symbol=NVDA',
     status: '200 OK',
-    response: JSON.stringify(
-      {
-        symbol: 'NVDA',
-        price: 177.0,
-        currency: 'USD',
-        as_of: '2026-09-05T14:32:01Z',
-        source: 'consolidated',
-      },
-      null,
-      2
-    ),
-  },
-  fundamentals: {
-    category: 'Financial',
-    label: 'Company fundamentals',
-    path: '/v1/companies/NVDA/fundamentals',
-    requestPath: '/api/v1/companies/NVDA/fundamentals.json',
-    status: '200 OK',
-    response: JSON.stringify(
-      {
-        ticker: 'NVDA',
-        revenue_ttm: 188300000000,
-        gross_margin: 0.716,
-        period: 'FY2026',
-        lineage_id: 'ln_7e9a20',
-      },
-      null,
-      2
-    ),
+    response: JSON.stringify({ symbol: 'NVDA', price: 177.0, currency: 'USD', as_of: '2026-09-05T14:32:01Z', source: 'consolidated' }, null, 2),
   },
 } as const
 
-type EndpointKey = keyof typeof ENDPOINT_SAMPLES
-type RequestLanguage = 'curl' | 'python' | 'javascript'
-
-const REQUEST_LANGUAGES: { id: RequestLanguage; label: string }[] = [
-  { id: 'curl', label: 'Curl' },
-  { id: 'python', label: 'Python HTTPX' },
-  { id: 'javascript', label: 'JavaScript' },
-]
-
-const CATALOG_SUGGESTIONS = [
-  { name: 'Market quotes', detail: 'quote.v1.4', type: 'SCRAPER' },
-  { name: 'Company fundamentals', detail: 'fundamentals.v1', type: 'SCHEMA' },
-  { name: 'Commerce signals', detail: 'orders.v2.1', type: 'PIPELINE' },
-] as const
-
-const PRODUCT_CATALOG = [
-  { id: 'shopify', kind: 'products', category: 'COMMERCE / 001', name: 'Shopify Catalog Engine', description: 'Normalize fragmented Shopify store data into a consistent analytical feed.', purpose: 'Normalize products, inventory, and orders into a consistent analytical feed.', input: 'Store / product sources', process: 'Collect -> Normalize -> Enrich -> Analyze', architecture: ['INGESTION', 'NORMALIZATION', 'SNAPSHOTS', 'PRICING INTELLIGENCE', 'API / DASHBOARD'], outputs: ['Parquet', 'JSON', 'SQLite'], dataModel: 'Product / Variant / Merchant / Price / Inventory', freshness: 'Daily', status: 'Module preview', lastRun: 'Not scheduled in demo' },
-  { id: 'kenya-rentals', kind: 'products', category: 'PROPERTY / 002', name: 'Kenya Rental Intelligence', description: 'Track rental supply, price movement, and neighborhood signals across Nairobi.', purpose: 'Turn fragmented rental listings into structured market intelligence.', input: 'Property24 / PigiaMe / BuyRentKenya', process: 'Collect -> Deduplicate -> Normalize -> Enrich', architecture: ['PROPERTY24 / PIGIAME / BUYRENTKENYA', 'INGEST', 'DEDUPLICATE', 'NORMALIZE', 'ENRICH', 'PRICE / SUPPLY SIGNALS', 'DATA PRODUCT'], outputs: ['Listings', 'Price history', 'API'], dataModel: 'Listing / Property / Neighborhood / Price', freshness: 'Daily', status: 'Module preview', lastRun: 'Not scheduled in demo' },
-  { id: 'price-tracker', kind: 'products', category: 'RETAIL / 003', name: 'Competitor Price Intelligence', description: 'Monitor competitor pricing and promotion changes across priority SKUs.', purpose: 'Detect meaningful price, promotion, and availability movement.', input: 'Competitor catalogs', process: 'Collect -> Compare -> Detect -> Alert', architecture: ['CATALOG INGESTION', 'NORMALIZATION', 'COMPARISON', 'ALERTS'], outputs: ['Price movements', 'Promotions', 'Alerts'], dataModel: 'SKU / Merchant / Price / Promotion / Availability', freshness: 'Scheduled', status: 'Module preview', lastRun: 'Not scheduled in demo' },
-  { id: 'market-signals', kind: 'products', category: 'MARKETS / 004', name: 'Market Signals', description: 'Turn fragmented market events into structured, decision-ready signals.', purpose: 'Expose market movement through a typed, inspectable data product.', input: 'Public market sources', process: 'Collect -> Normalize -> Score -> Serve', architecture: ['SOURCE INGESTION', 'NORMALIZATION', 'SIGNAL SCORING', 'DATA PRODUCT'], outputs: ['JSON', 'API', 'Dashboard'], dataModel: 'Entity / Signal / Timestamp / Confidence', freshness: 'Scheduled', status: 'Concept module', lastRun: 'Not scheduled in demo' },
-  { id: 'custom-pipelines', kind: 'services', category: 'BUILD / 001', name: 'Custom Data Pipelines', description: 'Design and ship ingestion systems around the sources your team already owns.', purpose: 'Move a messy source from first connection to dependable delivery.', input: 'APIs / Files / Operational systems', process: 'Connect -> Transform -> Validate -> Deliver', architecture: ['CONNECT', 'TRANSFORM', 'VALIDATE', 'DELIVER'], outputs: ['Pipeline', 'Runbook', 'API'], dataModel: 'Defined with your team', freshness: 'Project-defined', status: 'Service offering', lastRun: 'Starts during discovery' },
-  { id: 'web-extraction', kind: 'services', category: 'BUILD / 002', name: 'Web Data Extraction', description: 'Create maintainable extraction workflows for public web sources and catalogs.', purpose: 'Turn changing web surfaces into structured, reviewable source data.', input: 'Public web sources', process: 'Extract -> Parse -> Normalize -> Monitor', architecture: ['EXTRACT', 'PARSE', 'NORMALIZE', 'MONITOR'], outputs: ['JSON', 'Parquet', 'SQLite'], dataModel: 'Defined per source', freshness: 'Project-defined', status: 'Service offering', lastRun: 'Starts during discovery' },
-  { id: 'api-development', kind: 'services', category: 'BUILD / 003', name: 'API Development', description: 'Package structured intelligence behind versioned, documented interfaces.', purpose: 'Make useful data easy for applications and teams to consume.', input: 'Structured datasets', process: 'Model -> Version -> Document -> Serve', architecture: ['MODEL', 'VERSION', 'DOCUMENT', 'SERVE'], outputs: ['REST API', 'OpenAPI', 'SDK-ready contract'], dataModel: 'Typed and documented', freshness: 'Request-defined', status: 'Service offering', lastRun: 'Starts during discovery' },
-  { id: 'pricing-intelligence', kind: 'intelligence', category: 'SIGNALS / 001', name: 'Pricing Intelligence', description: 'Find the price movements and promotion patterns that matter to a category.', purpose: 'Support pricing decisions with comparable, explainable signals.', input: 'Catalogs / Prices / Promotions', process: 'Compare -> Detect -> Contextualize -> Explain', architecture: ['COMPARE', 'DETECT', 'CONTEXTUALIZE', 'EXPLAIN'], outputs: ['Signals', 'Alerts', 'Briefings'], dataModel: 'SKU / Price / Event / Context', freshness: 'Decision-defined', status: 'Intelligence offering', lastRun: 'Starts during discovery' },
-  { id: 'market-intelligence', kind: 'intelligence', category: 'SIGNALS / 002', name: 'Market Intelligence', description: 'Connect external signals to the questions your operating team needs answered.', purpose: 'Create a clearer view of a market before the decision point.', input: 'Market / Company / Web signals', process: 'Collect -> Enrich -> Analyze -> Surface', architecture: ['COLLECT', 'ENRICH', 'ANALYZE', 'SURFACE'], outputs: ['Research layer', 'Signals', 'API'], dataModel: 'Entity / Event / Relationship', freshness: 'Decision-defined', status: 'Intelligence offering', lastRun: 'Starts during discovery' },
-  { id: 'competitive-intelligence', kind: 'intelligence', category: 'SIGNALS / 003', name: 'Competitive Intelligence', description: 'Track competitor activity and translate change into useful context.', purpose: 'Give teams a durable view of competitive movement.', input: 'Competitor sources', process: 'Monitor -> Normalize -> Compare -> Brief', architecture: ['MONITOR', 'NORMALIZE', 'COMPARE', 'BRIEF'], outputs: ['Change log', 'Alerts', 'Dashboard'], dataModel: 'Competitor / Event / Impact', freshness: 'Decision-defined', status: 'Intelligence offering', lastRun: 'Starts during discovery' },
-] as const
-
-const CATALOG_FILTERS = [
-  { id: 'all', label: 'All catalog' },
-  { id: 'products', label: 'Data products' },
-  { id: 'services', label: 'Data services' },
-  { id: 'intelligence', label: 'Intelligence' },
-] as const
-
-type CatalogFilter = (typeof CATALOG_FILTERS)[number]['id']
-
-const DOCS_ENDPOINTS = {
-  market: {
-    category: 'Financial',
-    method: 'GET',
-    path: '/v1/markets/quotes',
-    summary: 'Market snapshot',
-    description: 'Retrieve a normalized quote snapshot for a public market symbol.',
-    parameter: 'symbol',
-    example: 'NVDA',
-    requestPath: '/api/v1/markets/quotes.json',
-    response: ENDPOINT_SAMPLES.market.response,
-    fields: [
-      ['symbol', 'string', 'Requested market symbol'],
-      ['price', 'number', 'Latest representative price'],
-      ['currency', 'string', 'Price currency'],
-      ['as_of', 'string<date-time>', 'Snapshot timestamp'],
-      ['source', 'string', 'Fixture provenance'],
-    ],
-  },
-  fundamentals: {
-    category: 'Financial',
-    method: 'GET',
-    path: '/v1/companies/{ticker}/fundamentals',
-    summary: 'Company fundamentals',
-    description: 'Retrieve normalized company fundamentals for a public ticker.',
-    parameter: 'ticker',
-    example: 'NVDA',
-    requestPath: '/api/v1/companies',
-    response: ENDPOINT_SAMPLES.fundamentals.response,
-    fields: [
-      ['ticker', 'string', 'Company ticker'],
-      ['revenue_ttm', 'integer', 'Trailing twelve-month revenue'],
-      ['gross_margin', 'number', 'Gross margin ratio'],
-      ['period', 'string', 'Reporting period'],
-      ['lineage_id', 'string', 'Record lineage identifier'],
-    ],
-  },
-} as const
-
-type DocsEndpointKey = keyof typeof DOCS_ENDPOINTS
-type DocsLanguage = 'curl' | 'python' | 'javascript'
-
-// ============================================================================
-// Interactive Documentation View
+/// ============================================================================
+// Shared Navigation Topbar with Active State & Brand Homepage Link
 // ============================================================================
 
-export function DocsPage(): JSX.Element {
-  const [activeDocsEndpoint, setActiveDocsEndpoint] = useState<DocsEndpointKey>('market')
-  const [docsLanguage, setDocsLanguage] = useState<DocsLanguage>('curl')
-  const [parameterValue, setParameterValue] = useState<string>('')
-  const [docsResponse, setDocsResponse] = useState<string>('')
-  const [docsRequestState, setDocsRequestState] = useState<'idle' | 'running' | 'complete' | 'error'>('idle')
-  const [docsCopyState, setDocsCopyState] = useState<'idle' | 'copied'>('idle')
+function HeaderTopbar(): JSX.Element {
+  const currentPath = window.location.pathname
 
-  const docsEndpoint = DOCS_ENDPOINTS[activeDocsEndpoint]
-  const docsRequestPath =
-    activeDocsEndpoint === 'market'
-      ? `${docsEndpoint.requestPath}?symbol=${encodeURIComponent(parameterValue || docsEndpoint.example)}`
-      : `${docsEndpoint.requestPath}/${encodeURIComponent(parameterValue || docsEndpoint.example)}/fundamentals.json`
+  return (
+    <nav className="topbar" aria-label="Main navigation">
+      {/* BRAND LOGO — REDIRECTS TO HOMEPAGE (/) */}
+      <a className="brand brand-button" href="/" aria-label="Return to Ainga Data Labs homepage">
+        <span className="brand-mark">ADL</span>
+        <span>Ainga Data Labs</span>
+      </a>
 
-  const docsCode =
-    docsLanguage === 'curl'
-      ? `curl "${docsRequestPath}"`
-      : docsLanguage === 'python'
-      ? `import httpx\n\nresponse = httpx.get("${docsRequestPath}")\nprint(response.json())`
-      : `const response = await fetch("${docsRequestPath}")\nconst data = await response.json()\nconsole.log(data)`
+      {/* PRIMARY NAVIGATION LINKS */}
+      <div className="nav-links">
+        <a href="/products" className={currentPath === '/products' ? 'active-link' : ''}>
+          Products
+        </a>
+        <a href="/services" className={currentPath === '/services' ? 'active-link' : ''}>
+          Services
+        </a>
+        <a href="/work" className={currentPath === '/work' ? 'active-link' : ''}>
+          Work
+        </a>
+        <a href="/insights" className={currentPath === '/insights' ? 'active-link' : ''}>
+          Insights
+        </a>
+        <a href="/docs" className={currentPath === '/docs' ? 'active-link' : ''}>
+          Docs
+        </a>
+        <a href="/contact" className={currentPath === '/contact' ? 'active-link' : ''}>
+          Contact Us
+        </a>
+      </div>
 
-  const runDocsRequest = async () => {
-    setDocsRequestState('running')
-    try {
-      const response = await fetch(docsRequestPath)
-      const data = await response.json()
-      setDocsResponse(JSON.stringify(data, null, 2))
-      setDocsRequestState(response.ok ? 'complete' : 'error')
-    } catch {
-      setDocsResponse(JSON.stringify({ error: 'Demo endpoint unavailable' }, null, 2))
-      setDocsRequestState('error')
-    }
-  }
+      {/* CALL TO ACTION */}
+      <div className="header-actions">
+        <a className="nav-cta nav-cta-primary" href="/contact">
+          Book demo <span aria-hidden="true">-&gt;</span>
+        </a>
+      </div>
+    </nav>
+  )
+}
 
-  const copyDocsCode = async () => {
-    await navigator.clipboard.writeText(docsCode)
-    setDocsCopyState('copied')
-    window.setTimeout(() => setDocsCopyState('idle'), 1400)
+// ============================================================================
+// 3. DEDICATED PAGE VIEWS
+// ============================================================================
+
+export function ProductsPage(): JSX.Element {
+  return (
+    <main className="docs-shell">
+      <HeaderTopbar />
+      <header className="services-hero-header">
+        <p className="eyebrow"><span className="status-dot" /> DECISION-READY DATA ENGINES</p>
+        <h1>ADL Product Portfolio</h1>
+        <p className="hero-lede">
+          Production-grade <strong>data engines</strong>, <strong>extraction systems</strong>, and <strong>intelligence pipelines</strong> engineered and managed by ADL.
+        </p>
+      </header>
+
+      <div className="products-grid-container">
+        {PRODUCTS_DATA.map((product) => (
+          <article className="product-portfolio-card" key={product.id}>
+            <div className="product-card-top-bar">
+              <span className="card-index">{product.category}</span>
+              <span className={`product-status-badge ${product.id === 'coming-soon' ? 'status-labs' : ''}`}>
+                <span className="status-dot-inline" /> {product.status}
+              </span>
+            </div>
+
+            <h2 className="product-card-title">{product.name}</h2>
+            <p className="product-tagline">{product.tagline}</p>
+            <p className="product-description">{product.description}</p>
+
+            <div className="product-architecture-strip">
+              <span className="meta-label">ARCHITECTURE:</span>
+              <div className="pipeline-flow">
+                {product.architecture.map((stage, idx) => (
+                  <span key={stage}>
+                    <code>{stage}</code>
+                    {idx < product.architecture.length - 1 && <i className="flow-arrow">-&gt;</i>}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="product-contract-footer">
+              <div className="contract-col">
+                <small>INPUT SOURCES</small>
+                <strong>{product.inputs}</strong>
+              </div>
+              <div className="contract-col">
+                <small>OUTPUT FORMAT</small>
+                <strong>{product.outputs}</strong>
+              </div>
+            </div>
+
+            <div className="product-card-action">
+              {product.id === 'coming-soon' ? (
+                <a className="button button-quiet service-cta" href="mailto:hello@aingadatalabs.com?subject=Early%20Access%20Inquiry">
+                  Request Early Access <span aria-hidden="true">-&gt;</span>
+                </a>
+              ) : (
+                <a 
+                  className="button button-quiet service-cta" 
+                  href={`mailto:hello@aingadatalabs.com?subject=Demo%20Inquiry%20for%20${encodeURIComponent(product.name)}`}
+                >
+                  Book Demo for <strong>{product.name.split('—')[0].trim()}</strong> <span aria-hidden="true">-&gt;</span>
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <footer className="footer">
+        <div>
+          <a className="brand brand-button" href="/">
+            <span className="brand-mark">ADL</span>
+            <span>Ainga Data Labs</span>
+          </a>
+          <p>Engineering clarity into complex data.</p>
+        </div>
+        <span className="footer-meta">Ainga Data Labs / 2026</span>
+      </footer>
+    </main>
+  )
+}
+
+export function ServicesPage(): JSX.Element {
+  return (
+    <main className="docs-shell">
+      <HeaderTopbar />
+      <header className="services-hero-header">
+        <p className="eyebrow"><span className="status-dot" /> PRODUCTION DATA ENGINEERING & EXTRACTION</p>
+        <h1>ADL Data Services</h1>
+        <p className="hero-lede">
+          We take on source maintenance, normalization, and infrastructure burden so your team receives <strong>schema-validated</strong>, <strong>decision-ready data</strong>.
+        </p>
+      </header>
+
+      <div className="services-grid-container">
+        {SERVICES_DATA.map((section) => (
+          <section className="services-card-block" key={section.category}>
+            <div className="services-card-header">
+              <span className="card-index">{section.badge}</span>
+              <h2>{section.category}</h2>
+              <p className="section-summary">{section.summary}</p>
+            </div>
+            
+            <div className="services-item-list">
+              {section.items.map((item) => (
+                <div className="service-item-row" key={item.title}>
+                  <div className="service-title-group">
+                    <span className="terminal-bullet">&gt;</span>
+                    <strong>{item.title}</strong>
+                  </div>
+                  <p>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="services-card-action">
+              <a 
+                className="button button-quiet service-cta" 
+                href={`mailto:hello@aingadatalabs.com?subject=Scope%20${encodeURIComponent(section.category)}%20System`}
+              >
+                Scope <strong>{section.category}</strong> System <span aria-hidden="true">-&gt;</span>
+              </a>
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <footer className="footer">
+        <div>
+          <a className="brand brand-button" href="/">
+            <span className="brand-mark">ADL</span>
+            <span>Ainga Data Labs</span>
+          </a>
+          <p>Engineering clarity into complex data.</p>
+        </div>
+        <span className="footer-meta">Ainga Data Labs / 2026</span>
+      </footer>
+    </main>
+  )
+}
+
+export function WorkPage(): JSX.Element {
+  return (
+    <main className="docs-shell">
+      <HeaderTopbar />
+      <header className="services-hero-header">
+        <p className="eyebrow"><span className="status-dot" /> PROOF OF PERFORMANCE & CASE STUDIES</p>
+        <h1>ADL Work & Systems Built</h1>
+        <p className="hero-lede">
+          We prove capability through <strong>quantifiable results</strong>, <strong>production systems</strong>, and <strong>reusable architectures</strong>.
+        </p>
+      </header>
+
+      <section className="work-results-banner">
+        <div className="results-grid">
+          {WORK_RESULTS_METRICS.map((res) => (
+            <div className="result-stat-card" key={res.label}>
+              <strong className="result-metric">{res.metric}</strong>
+              <span className="result-label">{res.label}</span>
+              <small className="result-detail">{res.detail}</small>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="work-cases-container">
+        {CASE_STUDIES_DATA.map((cs) => (
+          <article className="case-study-card" key={cs.id}>
+            <div className="case-card-header">
+              <span className="card-index">{cs.badge}</span>
+            </div>
+            
+            <h3 className="case-title">{cs.title}</h3>
+            <p className="case-summary">{cs.summary}</p>
+
+            <div className="case-breakdown-grid">
+              <div className="case-col">
+                <small>PROBLEM</small>
+                <p>{cs.problem}</p>
+              </div>
+              <div className="case-col">
+                <small>APPROACH</small>
+                <p>{cs.approach}</p>
+              </div>
+              <div className="case-col">
+                <small>SYSTEM BUILT</small>
+                <p>{cs.systemBuilt}</p>
+              </div>
+              <div className="case-col">
+                <small>EXECUTION</small>
+                <p>{cs.execution}</p>
+              </div>
+            </div>
+
+            <div className="case-results-box">
+              <small>QUANTIFIABLE RESULTS</small>
+              <ul>
+                {cs.results.map((res, i) => (
+                  <li key={i}>
+                    <span className="bullet-green">✓</span> {res}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="case-tech-stack">
+              <small>TECHNICAL STACK:</small>
+              <div className="tech-tags">
+                {cs.techStack.map((tech) => (
+                  <span className="tech-tag" key={tech}>{tech}</span>
+                ))}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <footer className="footer">
+        <div>
+          <a className="brand brand-button" href="/">
+            <span className="brand-mark">ADL</span>
+            <span>Ainga Data Labs</span>
+          </a>
+          <p>Engineering clarity into complex data.</p>
+        </div>
+        <span className="footer-meta">Ainga Data Labs / 2026</span>
+      </footer>
+    </main>
+  )
+}
+
+export function InsightsPage(): JSX.Element {
+  const [activeFilter, setActiveFilter] = useState<InsightCategory>('all')
+
+  const visibleInsights = activeFilter === 'all'
+    ? INSIGHTS_DATA
+    : INSIGHTS_DATA.filter((item) => item.category === activeFilter)
+
+  return (
+    <main className="docs-shell">
+      <HeaderTopbar />
+      <header className="services-hero-header">
+        <p className="eyebrow"><span className="status-dot" /> ADL RESEARCH & ENGINEERING JOURNAL</p>
+        <h1>ADL Insights & Research</h1>
+        <p className="hero-lede">
+          Reports, empirical data studies, technical observations, pipeline methodologies, and upcoming blogs from <strong>Ainga Data Labs</strong>.
+        </p>
+      </header>
+
+      <div className="insights-filter-strip">
+        {INSIGHTS_CATEGORIES.map((cat) => (
+          <button
+            key={cat.id}
+            className={`catalog-filter ${activeFilter === cat.id ? 'active' : ''}`}
+            onClick={() => setActiveFilter(cat.id)}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="insights-grid-container">
+        {visibleInsights.map((insight) => (
+          <article className="insight-card" key={insight.id}>
+            <div className="insight-card-top">
+              <span className="card-index">{insight.badge}</span>
+              <span className="insight-meta">{insight.date} • {insight.readTime}</span>
+            </div>
+
+            <h2 className="insight-title">{insight.title}</h2>
+            <p className="insight-summary">{insight.summary}</p>
+
+            <div className="insight-topics">
+              {insight.topics.map((topic) => (
+                <span className="tech-tag" key={topic}>{topic}</span>
+              ))}
+            </div>
+
+            <div className="insight-action">
+              {insight.category === 'upcoming' ? (
+                <span className="upcoming-badge">PUBLISHING SOON</span>
+              ) : (
+                <a 
+                  className="button button-quiet service-cta" 
+                  href={`mailto:hello@aingadatalabs.com?subject=Inquiry%20Regarding%20${encodeURIComponent(insight.title)}`}
+                >
+                  Request Full Report <span aria-hidden="true">-&gt;</span>
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <footer className="footer">
+        <div>
+          <a className="brand brand-button" href="/">
+            <span className="brand-mark">ADL</span>
+            <span>Ainga Data Labs</span>
+          </a>
+          <p>Engineering clarity into complex data.</p>
+        </div>
+        <span className="footer-meta">Ainga Data Labs / 2026</span>
+      </footer>
+    </main>
+  )
+}
+
+export function ContactPage(): JSX.Element {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    company: '',
+    need: 'Data pipeline',
+    problem: '',
+    budget: '',
+    timeline: '',
+  })
+  const [submitted, setSubmitted] = useState(false)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const subject = encodeURIComponent(`ADL Inquiry: ${formData.need} - ${formData.company || formData.name}`)
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nWork Email: ${formData.email}\nCompany: ${formData.company}\nNeed: ${formData.need}\nBudget: ${formData.budget || 'N/A'}\nTimeline: ${formData.timeline || 'N/A'}\n\nProblem Description:\n${formData.problem}`
+    )
+    window.location.href = `mailto:hello@aingadatalabs.com?subject=${subject}&body=${body}`
+    setSubmitted(true)
   }
 
   return (
     <main className="docs-shell">
-      <nav className="docs-nav" aria-label="Documentation navigation">
-        <a className="brand" href="/">
-          <span className="brand-mark">ADL</span>
-          <span>Ainga Data Labs</span>
-        </a>
-        <span>ADL DEMO API / v0.1.0</span>
-        <a href="/">
-          Back to site <span aria-hidden="true">-&gt;</span>
-        </a>
-      </nav>
+      <HeaderTopbar />
 
+      <header className="services-hero-header">
+        <p className="eyebrow"><span className="status-dot" /> SYSTEM SCOPING & INQUIRY</p>
+        <h1>Tell us what you&apos;re trying to solve</h1>
+        <p className="hero-lede">
+          Fill out the short intake form below and an ADL data engineer will review your project scope within 24 hours.
+        </p>
+      </header>
+
+      <div className="contact-form-container">
+        {submitted ? (
+          <div className="form-success-card">
+            <span className="status-dot-inline" />
+            <h2>Inquiry Prepared</h2>
+            <p>Your mail client has been opened with your scope parameters pre-filled. Click send to dispatch your inquiry to <strong>hello@aingadatalabs.com</strong>.</p>
+            <button className="button button-quiet" onClick={() => setSubmitted(false)}>
+              Submit Another Inquiry <span aria-hidden="true">-&gt;</span>
+            </button>
+          </div>
+        ) : (
+          <form className="contact-intake-form" onSubmit={handleSubmit}>
+            <div className="form-row-grid">
+              <label className="form-field">
+                <span>Name *</span>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Alex Mercer"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                />
+              </label>
+
+              <label className="form-field">
+                <span>Work Email *</span>
+                <input
+                  type="email"
+                  required
+                  placeholder="alex@company.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+              </label>
+            </div>
+
+            <div className="form-row-grid">
+              <label className="form-field">
+                <span>Company / Organization *</span>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Acme Corp"
+                  value={formData.company}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                />
+              </label>
+
+              <label className="form-field">
+                <span>What do you need? *</span>
+                <select
+                  value={formData.need}
+                  onChange={(e) => setFormData({ ...formData, need: e.target.value })}
+                >
+                  <option value="Data pipeline">Data pipeline</option>
+                  <option value="Market intelligence">Market intelligence</option>
+                  <option value="Lead generation">Lead generation</option>
+                  <option value="Backend/API">Backend/API</option>
+                  <option value="Automation">Automation</option>
+                  <option value="Custom data system">Custom data system</option>
+                  <option value="Other">Other</option>
+                </select>
+              </label>
+            </div>
+
+            <label className="form-field full-width">
+              <span>Tell us about the problem *</span>
+              <textarea
+                required
+                rows={5}
+                placeholder="Describe your current data bottleneck, sources, or system requirements..."
+                value={formData.problem}
+                onChange={(e) => setFormData({ ...formData, problem: e.target.value })}
+              />
+            </label>
+
+            <div className="form-row-grid">
+              <label className="form-field">
+                <span>Budget / project range (optional)</span>
+                <input
+                  type="text"
+                  placeholder="e.g. $5k - $15k"
+                  value={formData.budget}
+                  onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                />
+              </label>
+
+              <label className="form-field">
+                <span>Timeline (optional)</span>
+                <input
+                  type="text"
+                  placeholder="e.g. Immediate / 2-4 weeks"
+                  value={formData.timeline}
+                  onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
+                />
+              </label>
+            </div>
+
+            <div className="form-action">
+              <button type="submit" className="button button-primary submit-btn">
+                Submit Inquiry <span aria-hidden="true">-&gt;</span>
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+
+      <footer className="footer">
+        <div>
+          <a className="brand brand-button" href="/">
+            <span className="brand-mark">ADL</span>
+            <span>Ainga Data Labs</span>
+          </a>
+          <p>Engineering clarity into complex data.</p>
+        </div>
+        <span className="footer-meta">Ainga Data Labs / 2026</span>
+      </footer>
+    </main>
+  )
+}
+
+export function DocsPage(): JSX.Element {
+  return (
+    <main className="docs-shell">
+      <HeaderTopbar />
       <div className="docs-layout">
         <aside className="docs-sidebar">
           <p className="eyebrow">API REFERENCE</p>
-          <h1>ADL Demo API</h1>
-          <p>Representative endpoints for exploring ADL data contracts and delivery patterns.</p>
+          <h1>ADL Schema Docs</h1>
+          <p>Production API contracts, schemas, and interactive query samples.</p>
           <div className="docs-sidebar-section">
             <small>ENDPOINTS</small>
-            <button
-              className={activeDocsEndpoint === 'market' ? 'docs-nav-item active' : 'docs-nav-item'}
-              onClick={() => {
-                setActiveDocsEndpoint('market')
-                setParameterValue('NVDA')
-                setDocsResponse('')
-                setDocsRequestState('idle')
-              }}
-            >
-              <b>GET</b> Market snapshot
-            </button>
-            <button
-              className={activeDocsEndpoint === 'fundamentals' ? 'docs-nav-item active' : 'docs-nav-item'}
-              onClick={() => {
-                setActiveDocsEndpoint('fundamentals')
-                setParameterValue('NVDA')
-                setDocsResponse('')
-                setDocsRequestState('idle')
-              }}
-            >
-              <b>GET</b> Company fundamentals
-            </button>
-          </div>
-          <div className="docs-demo-note">
-            <span className="status-dot" /> Representative demo fixtures
-            <br />
-            <small>Not a production data service</small>
+            <button className="docs-nav-item active"><b>GET</b> Market snapshot</button>
           </div>
         </aside>
 
         <section className="docs-content">
-          <div className="docs-breadcrumb">
-            API REFERENCE <span>/</span> {docsEndpoint.summary.toUpperCase()}
-          </div>
+          <div className="docs-breadcrumb">API REFERENCE / MARKET SNAPSHOT API</div>
           <div className="docs-heading">
-            <span className="docs-method">{docsEndpoint.method}</span>
-            <h2>{docsEndpoint.path}</h2>
+            <span className="docs-method">GET</span>
+            <h2>/v1/markets/quotes</h2>
           </div>
-          <p className="docs-description">{docsEndpoint.description}</p>
-
-          <div className="docs-request-card">
-            <div className="docs-card-heading">
-              <span>REQUEST PARAMETERS</span>
-              <span>QUERY / PATH</span>
-            </div>
-            <label>
-              <span>{docsEndpoint.parameter}</span>
-              <input
-                value={parameterValue}
-                onChange={(event) => setParameterValue(event.target.value)}
-                placeholder={docsEndpoint.example}
-              />
-            </label>
-            <div className="docs-request-actions">
-              <button className="docs-run" onClick={runDocsRequest} disabled={docsRequestState === 'running'}>
-                {docsRequestState === 'running' ? 'Running...' : 'Run request'} <span aria-hidden="true">-&gt;</span>
-              </button>
-              <span>
-                {docsRequestState === 'complete'
-                  ? '200 OK / demo response'
-                  : docsRequestState === 'error'
-                  ? 'Request failed'
-                  : 'Ready to test'}
-              </span>
-            </div>
-          </div>
-
-          <div className="docs-code-card">
-            <div className="docs-card-heading">
-              <span>REQUEST CODE</span>
-              <div className="docs-language-tabs">
-                {(['curl', 'python', 'javascript'] as DocsLanguage[]).map((language) => (
-                  <button
-                    key={language}
-                    className={docsLanguage === language ? 'active' : ''}
-                    onClick={() => {
-                      setDocsLanguage(language)
-                      setDocsCopyState('idle')
-                    }}
-                  >
-                    {language === 'python' ? 'Python HTTPX' : language === 'javascript' ? 'JavaScript' : 'cURL'}
-                  </button>
-                ))}
-              </div>
-              <button className="docs-copy" onClick={copyDocsCode}>
-                {docsCopyState === 'copied' ? 'Copied' : 'Copy'}
-              </button>
-            </div>
-            <pre>
-              <code>{docsCode}</code>
-            </pre>
-          </div>
-
-          <div className="docs-schema-card">
-            <div className="docs-card-heading">
-              <span>RESPONSE / 200 OK</span>
-              <span>APPLICATION / JSON</span>
-            </div>
-            <p>Normalized response object returned by the demo fixture.</p>
-            <div className="schema-table">
-              <div className="schema-row schema-header">
-                <span>FIELD</span>
-                <span>TYPE</span>
-                <span>DESCRIPTION</span>
-              </div>
-              {docsEndpoint.fields.map(([field, type, description]) => (
-                <div className="schema-row" key={field}>
-                  <strong>{field}</strong>
-                  <code>{type}</code>
-                  <span>{description}</span>
-                </div>
-              ))}
-            </div>
-            <pre className="docs-response">
-              <code>{docsResponse || docsEndpoint.response}</code>
-            </pre>
-          </div>
+          <p className="docs-description">Retrieve a normalized quote snapshot for a public market symbol.</p>
+          <pre className="docs-response">
+            <code>{ENDPOINT_SAMPLES.market.response}</code>
+          </pre>
         </section>
       </div>
     </main>
   )
 }
 
-// ============================================================================
-// Primary Landing Page View
-// ============================================================================
-
 export function LandingPage(): JSX.Element {
-  const [catalogQuery, setCatalogQuery] = useState<string>('')
-  const [activeEndpoint, setActiveEndpoint] = useState<EndpointKey>('market')
   const [selectedNode, setSelectedNode] = useState<PipelineNodeId>('transform')
-  const [enabledNodes, setEnabledNodes] = useState<Record<PipelineNodeId, boolean>>({
-    ingest: true,
-    transform: true,
-    deliver: true,
-  })
-  const [requestState, setRequestState] = useState<'idle' | 'running' | 'complete' | 'rate-limited' | 'error'>('idle')
-  const [requestLanguage, setRequestLanguage] = useState<RequestLanguage>('curl')
-  const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle')
-  const [responseBody, setResponseBody] = useState<string>(ENDPOINT_SAMPLES.market.response)
-  const [responseStatus, setResponseStatus] = useState<string>(ENDPOINT_SAMPLES.market.status)
-  const [runningModule, setRunningModule] = useState<string | null>(null)
-  const [selectedModule, setSelectedModule] = useState<(typeof PRODUCT_CATALOG)[number] | null>(null)
-  const [catalogFilter, setCatalogFilter] = useState<CatalogFilter>('all')
-
-  const endpoint = ENDPOINT_SAMPLES[activeEndpoint]
   const selectedPipelineNode = PIPELINE_NODES.find((node) => node.id === selectedNode) ?? PIPELINE_NODES[1]
-  const matchingCatalogItems = CATALOG_SUGGESTIONS.filter((item) =>
-    `${item.name} ${item.detail} ${item.type}`.toLowerCase().includes(catalogQuery.toLowerCase())
-  )
-  const visibleModules =
-    catalogFilter === 'all'
-      ? PRODUCT_CATALOG
-      : PRODUCT_CATALOG.filter((module) => module.kind === catalogFilter)
-
-  useEffect(() => {
-    const focusSearch = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault()
-        document.getElementById('catalog-search-input')?.focus()
-      }
-    }
-
-    window.addEventListener('keydown', focusSearch)
-    return () => window.removeEventListener('keydown', focusSearch)
-  }, [])
-
-  useEffect(() => {
-    if (window.location.hash) {
-      window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
-    }
-  }, [])
-
-  const requestSnippet =
-    requestLanguage === 'curl'
-      ? `curl "${endpoint.requestPath}"`
-      : requestLanguage === 'python'
-      ? `import httpx\n\nresponse = httpx.get("${endpoint.requestPath}")\nprint(response.json())`
-      : `const response = await fetch("${endpoint.requestPath}")\nconst data = await response.json()\nconsole.log(data)`
-
-  const runRequest = async () => {
-    setRequestState('running')
-    try {
-      const response = await fetch(endpoint.requestPath)
-      const body = await response.json()
-      setResponseBody(JSON.stringify(body, null, 2))
-      setResponseStatus(`${response.status} ${response.statusText}`)
-      setRequestState(response.status === 429 ? 'rate-limited' : response.ok ? 'complete' : 'error')
-    } catch {
-      setResponseBody(
-        JSON.stringify({ error: 'Demo API unavailable', detail: 'Start the ADL frontend server and try again.' }, null, 2)
-      )
-      setResponseStatus('NETWORK ERROR')
-      setRequestState('error')
-    }
-  }
-
-  const copySnippet = async () => {
-    await navigator.clipboard.writeText(requestSnippet)
-    setCopyState('copied')
-    window.setTimeout(() => setCopyState('idle'), 1600)
-  }
-
-  const runModule = (moduleId: string) => {
-    setRunningModule(moduleId)
-    window.setTimeout(() => setRunningModule(null), 1200)
-  }
-
-  const openModule = (moduleId: string) => {
-    setSelectedModule(PRODUCT_CATALOG.find((module) => module.id === moduleId) ?? null)
-  }
-
-  const scrollToSection = (sectionId: string) => {
-    setSelectedModule(null)
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' })
-  }
 
   return (
     <main className="site-shell">
-      <nav className="topbar" aria-label="Main navigation">
-        <button className="brand brand-button" onClick={() => scrollToSection('top')} aria-label="Ainga Data Labs home">
-          <span className="brand-mark">ADL</span>
-          <span>Ainga Data Labs</span>
-        </button>
-        <div className="nav-links">
-          <button onClick={() => scrollToSection('catalog')}>Products</button>
-          <a href="/docs">Docs</a>
-          <button onClick={() => scrollToSection('work')}>Work</button>
-        </div>
-        <div className="header-actions">
-          <a className="nav-cta nav-cta-primary" href="mailto:hello@aingadatalabs.com?subject=Book%20a%20discovery%20call">
-            Book demo <span aria-hidden="true">-&gt;</span>
-          </a>
-        </div>
-      </nav>
-
+      <HeaderTopbar />
       <section className="hero" id="top">
         <div className="hero-copy">
-          <p className="eyebrow">
-            <span className="status-dot" /> Decision-ready business information
-          </p>
-          <h1>
-            The data your decisions need, <em>without the maintenance burden.</em>
-          </h1>
+          <p className="eyebrow"><span className="status-dot" /> DATA ENGINEERING & MARKET INTELLIGENCE LABS</p>
+          <h1>The data your decisions need, <em>without the maintenance burden.</em></h1>
           <p className="hero-lede">
-            We take on the source maintenance, normalization, and delivery work your team should not have to build and
-            babysit in-house, turning fragmented data into reliable business information you can use.
+            Ainga Data Labs (ADL) builds and manages production-grade data pipelines, web extraction systems, and market intelligence APIs.
           </p>
-          <div className="hero-conversion-stack">
-            <div className="catalog-search" aria-label="Search the ADL catalog">
-              <div className="catalog-search-label">
-                <span>CATALOG / DISCOVER A STARTING POINT</span>
-                <strong>
-                  {catalogQuery ? `${matchingCatalogItems.length} MATCH${matchingCatalogItems.length === 1 ? '' : 'ES'}` : '03 MODULES'}
-                </strong>
-              </div>
-              <label className="search-field">
-                <span aria-hidden="true">/</span>
-                <input
-                  id="catalog-search-input"
-                  type="search"
-                  value={catalogQuery}
-                  onChange={(event) => setCatalogQuery(event.target.value)}
-                  placeholder="Search scrapers, schemas, pipelines"
-                  aria-label="Search scrapers, schemas, and pipelines"
-                />
-                <kbd>⌘ K</kbd>
-              </label>
-              <div className="catalog-popular">
-                <span>Popular:</span>
-                <button onClick={() => setCatalogQuery('Shopify')}>Shopify Intelligence</button>
-                <button onClick={() => setCatalogQuery('Market quotes')}>Market Quotes</button>
-              </div>
-              <div className="catalog-results" aria-live="polite">
-                {(matchingCatalogItems.length ? matchingCatalogItems : CATALOG_SUGGESTIONS.slice(0, 1)).map((item) => (
-                  <span className={matchingCatalogItems.length ? '' : 'catalog-result-muted'} key={item.detail}>
-                    <small>{item.type}</small>
-                    <strong>{item.name}</strong>
-                    <code>{item.detail}</code>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+          <p className="audience-tag-strip">
+            <strong>BUILT FOR:</strong> Data Engineers • Product Teams • E-Commerce Operators
+          </p>
           <div className="hero-actions">
-            <button className="button button-primary" onClick={() => scrollToSection('catalog')}>
-              Explore catalog <span aria-hidden="true">-&gt;</span>
-            </button>
-            <a className="button button-quiet" href="mailto:hello@aingadatalabs.com?subject=Book%20a%20demo">
-              Book demo <span aria-hidden="true">-&gt;</span>
+            <a className="button button-primary" href="/contact">
+              Book a Demo <span aria-hidden="true">-&gt;</span>
             </a>
-          </div>
-          <div className="thesis-flow" aria-label="ADL data system thesis">
-            <span>COLLECT</span>
-            <i>-&gt;</i>
-            <span>TRANSFORM</span>
-            <i>-&gt;</i>
-            <span>ENRICH</span>
-            <i>-&gt;</i>
-            <span>SERVE</span>
+            <a className="button button-quiet" href="/products">
+              Explore Products <span aria-hidden="true">-&gt;</span>
+            </a>
           </div>
         </div>
 
-        <div className="hero-visual" aria-label="ADL pipeline interface preview">
+        <div className="hero-visual">
           <div className="visual-header">
-            <span>
-              <span className="live-pulse" /> PIPELINE / INTERFACE PREVIEW
-            </span>
+            <span><span className="live-pulse" /> PIPELINE / INTERFACE PREVIEW</span>
             <span>ADL / CORE-01</span>
           </div>
           <div className="pipeline-map">
             {PIPELINE_NODES.map((node, index) => (
               <div key={node.id}>
                 <button
-                  className={`pipeline-node ${selectedNode === node.id ? 'active-node' : ''} ${
-                    enabledNodes[node.id] ? '' : 'disabled-node'
-                  }`}
+                  className={`pipeline-node ${selectedNode === node.id ? 'active-node' : ''}`}
                   onClick={() => setSelectedNode(node.id)}
-                  aria-pressed={selectedNode === node.id}
-                  aria-label={`${node.name}, ${enabledNodes[node.id] ? 'enabled' : 'disabled'}. Select node for inspection.`}
                 >
                   <span className="node-icon">0{index + 1}</span>
                   <span className="node-copy">
@@ -526,654 +854,32 @@ export function LandingPage(): JSX.Element {
                     <strong>{node.name}</strong>
                   </span>
                   <b>{node.metric}</b>
-                  <span
-                    className="node-toggle"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      setEnabledNodes((current) => ({ ...current, [node.id]: !current[node.id] }))
-                    }}
-                    role="switch"
-                    aria-checked={enabledNodes[node.id]}
-                    tabIndex={0}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault()
-                        setEnabledNodes((current) => ({ ...current, [node.id]: !current[node.id] }))
-                      }
-                    }}
-                  >
-                    {enabledNodes[node.id] ? 'ON' : 'OFF'}
-                  </span>
                 </button>
-                {index < PIPELINE_NODES.length - 1 && (
-                  <div
-                    className={`pipeline-connector ${
-                      enabledNodes[node.id] && enabledNodes[PIPELINE_NODES[index + 1].id] ? 'connector-live' : ''
-                    }`}
-                  >
-                    <span />
-                  </div>
-                )}
               </div>
             ))}
             <div className="schema-inspector">
               <span>SCHEMA / {selectedPipelineNode.schema}</span>
               <strong>{selectedPipelineNode.fields}</strong>
-              <span className="inspector-state">{enabledNodes[selectedNode] ? 'READY' : 'PAUSED'}</span>
-              <button onClick={() => setEnabledNodes((current) => ({ ...current, [selectedNode]: !current[selectedNode] }))}>
-                {enabledNodes[selectedNode] ? 'Disable node' : 'Enable node'} <span aria-hidden="true">-&gt;</span>
-              </button>
-            </div>
-            <div className="node-detail" role="tabpanel" aria-label={`${selectedPipelineNode.name} details`}>
-              <div>
-                <small>LIVE PAYLOAD</small>
-                <code>{selectedPipelineNode.payload}</code>
-              </div>
-              <div>
-                <small>LATENCY</small>
-                <strong>{selectedPipelineNode.latency}</strong>
-              </div>
-              <div>
-                <small>SCHEMA DEFINITION</small>
-                <strong>
-                  {selectedPipelineNode.schema} / {selectedPipelineNode.fields}
-                </strong>
-              </div>
+              <span className="inspector-state">READY</span>
             </div>
           </div>
-          <div className="visual-footer">
-            <span>PIPELINE STAGES</span>
-            <strong>
-              03 <small>/ core</small>
-            </strong>
-            <span className="footer-divider" />
-            <span>CONTRACT</span>
-            <strong className="accent-text">TYPED</strong>
-          </div>
         </div>
-      </section>
-
-      <section className="metric-strip" aria-label="ADL delivery principles">
-        <div>
-          <strong>03</strong>
-          <small>core systems mapped</small>
-        </div>
-        <div>
-          <strong>03</strong>
-          <small>pipeline stages shown</small>
-        </div>
-        <div>
-          <strong>Daily</strong>
-          <small>refresh cadence available</small>
-        </div>
-        <div>
-          <strong>Typed</strong>
-          <small>contracts by default</small>
-        </div>
-      </section>
-
-      <section className="trust-section" aria-label="Technology partners and interface principles">
-        <div className="trust-partners">
-          <span className="trust-label">SYSTEMS THAT SPEAK ADL</span>
-          <div className="partner-list">
-            <strong>SHOPIFY</strong>
-            <strong>POSTGRESQL</strong>
-            <strong>dbt</strong>
-            <strong>OPENAI</strong>
-            <strong>SNOWFLAKE</strong>
-          </div>
-        </div>
-        <div className="security-list">
-          <div>
-            <span className="security-mark">&#10003;</span>
-            <span>
-              <strong>TLS 1.3 / UI DEMO</strong>
-              <small>Transport layer shown in playground</small>
-            </span>
-          </div>
-          <div>
-            <span className="security-mark">&#10003;</span>
-            <span>
-              <strong>PRIVACY-AWARE DESIGN</strong>
-              <small>Ingestion requirements are documented</small>
-            </span>
-          </div>
-        </div>
-      </section>
-
-      <section className="systems-proof-section" aria-label="Built systems">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">Proof / systems built</p>
-            <h2>
-              Actual systems for
-              <br />
-              <em>real questions.</em>
-            </h2>
-          </div>
-          <p className="catalog-summary">
-            Three examples of how ADL turns fragmented sources into useful business information.
-          </p>
-        </div>
-        <div className="proof-system-grid">
-          <button onClick={() => scrollToSection('work')}>
-            <span>01 / COMMERCE</span>
-            <strong>Shopify Intelligence</strong>
-            <small>Store data / pricing / inventory</small>
-            <i aria-hidden="true">-&gt;</i>
-          </button>
-          <button onClick={() => scrollToSection('catalog')}>
-            <span>02 / PROPERTY</span>
-            <strong>Kenya Rental Intelligence</strong>
-            <small>Listings / supply / price signals</small>
-            <i aria-hidden="true">-&gt;</i>
-          </button>
-          <button onClick={() => scrollToSection('catalog')}>
-            <span>03 / RETAIL</span>
-            <strong>Competitor Price Intelligence</strong>
-            <small>Catalogs / promotions / alerts</small>
-            <i aria-hidden="true">-&gt;</i>
-          </button>
-        </div>
-      </section>
-
-      <section className="proof-section" id="playground">
-        <div className="section-intro">
-          <p className="eyebrow">A working proof, not a platform claim</p>
-          <h2>
-            See how a question becomes
-            <br />
-            <em>a usable interface.</em>
-          </h2>
-          <p>The playground demonstrates the kind of typed, inspectable delivery layer ADL builds around a real business need.</p>
-        </div>
-        <div className="api-console">
-          <div className="console-top">
-            <div className="window-dots">
-              <i />
-              <i />
-              <i />
-            </div>
-            <span>ADL DEMO API / SAME-ORIGIN</span>
-            <span className="console-secure">
-              JSON RESPONSE <span aria-hidden="true">&#10003;</span>
-            </span>
-          </div>
-          <div className="endpoint-tabs">
-            {(Object.keys(ENDPOINT_SAMPLES) as EndpointKey[]).map((key) => (
-              <button
-                key={key}
-                className={activeEndpoint === key ? 'endpoint-tab active' : 'endpoint-tab'}
-                onClick={() => {
-                  setActiveEndpoint(key)
-                  setResponseBody(ENDPOINT_SAMPLES[key].response)
-                  setResponseStatus(ENDPOINT_SAMPLES[key].status)
-                  setRequestState('idle')
-                  setCopyState('idle')
-                }}
-              >
-                {ENDPOINT_SAMPLES[key].label}
-              </button>
-            ))}
-            <a className="console-docs" href="/docs">
-              Open docs -&gt;
-            </a>
-          </div>
-          <div className="request-line">
-            <span className="method">GET</span>
-            <code>{endpoint.path}</code>
-            <span className={`response-status ${requestState === 'error' ? 'response-error' : ''}`}>{responseStatus}</span>
-          </div>
-          <pre className="response-body">
-            <code>{requestLanguage === 'curl' ? responseBody : requestSnippet}</code>
-          </pre>
-          <div className="console-bottom">
-            <span>
-              response_time{' '}
-              <strong>{requestState === 'running' ? '...' : requestState === 'complete' ? 'local' : '--'}</strong>
-            </span>
-            <span>
-              schema <strong>v1.4.0</strong>
-            </span>
-            <span className={`request-status request-status-${requestState}`}>
-              <strong>
-                {requestState === 'running'
-                  ? 'Request in flight'
-                  : requestState === 'complete'
-                  ? '200 OK'
-                  : requestState === 'rate-limited'
-                  ? '429 RATE LIMITED'
-                  : requestState === 'error'
-                  ? 'Request failed'
-                  : 'Ready to test'}
-              </strong>
-            </span>
-            <div className="request-tools">
-              <div className="language-switcher" role="group" aria-label="Code language">
-                <span>CODE</span>
-                {REQUEST_LANGUAGES.map((language) => (
-                  <button
-                    key={language.id}
-                    className={requestLanguage === language.id ? 'language-tab active' : 'language-tab'}
-                    onClick={() => {
-                      setRequestLanguage(language.id)
-                      setCopyState('idle')
-                    }}
-                  >
-                    {language.label}
-                  </button>
-                ))}
-              </div>
-              <button className="copy-request" onClick={copySnippet}>
-                {copyState === 'copied' ? 'Copied' : 'Copy'} <span aria-hidden="true">&#10697;</span>
-              </button>
-              <button
-                className={`run-request run-request-${requestState}`}
-                onClick={runRequest}
-                disabled={requestState === 'running'}
-              >
-                {requestState === 'running'
-                  ? 'Running...'
-                  : requestState === 'complete'
-                  ? 'Run again'
-                  : requestState === 'rate-limited'
-                  ? 'Retry request'
-                  : 'Run request'}{' '}
-                <span aria-hidden="true">-&gt;</span>
-              </button>
-            </div>
-          </div>
-          <div className="console-actions">
-            <a href="/docs">Open interactive docs</a>
-            <span>
-              {requestState === 'rate-limited' ? 'Demo limit reached / retry shortly' : 'Local demo endpoint / JSON'}
-            </span>
-          </div>
-        </div>
-      </section>
-
-      <section className="systems-section" id="services">
-        <div className="section-heading">
-          <p className="eyebrow">What ADL delivers</p>
-          <h2>
-            Clear services for
-            <br />
-            <em>messy data.</em>
-          </h2>
-        </div>
-        <div className="capability-grid">
-          <article>
-            <span className="card-index">01 / 03</span>
-            <h3>Data pipelines</h3>
-            <p>Collect, clean, and structure data from fragmented sources.</p>
-            <button onClick={() => scrollToSection('catalog')}>
-              Explore data products <span>-&gt;</span>
-            </button>
-          </article>
-          <article>
-            <span className="card-index">02 / 03</span>
-            <h3>Data APIs</h3>
-            <p>Turn complex datasets into simple interfaces your software can consume.</p>
-            <button onClick={() => scrollToSection('playground')}>
-              Explore the API playground <span>-&gt;</span>
-            </button>
-          </article>
-          <article>
-            <span className="card-index">03 / 03</span>
-            <h3>Market intelligence</h3>
-            <p>Monitor prices, supply, competitors, and market movement.</p>
-            <button onClick={() => scrollToSection('catalog')}>
-              Explore intelligence <span>-&gt;</span>
-            </button>
-          </article>
-        </div>
-      </section>
-
-      <section className="featured-section" id="work">
-        <div className="case-study-heading">
-          <p className="eyebrow">Flagship case study / 001</p>
-          <h2>Shopify Intelligence</h2>
-          <p className="case-study-lede">From fragmented storefront data to a unified decision layer.</p>
-          <p className="case-study-note">
-            A multi-merchant pipeline that brings ingestion, normalization, snapshots, and pricing intelligence into one
-            dependable serving layer.
-          </p>
-          <a className="text-link" href="mailto:hello@aingadatalabs.com?subject=Shopify%20Intelligence%20discussion">
-            Discuss a similar system <span>-&gt;</span>
-          </a>
-        </div>
-        <div className="case-study-facts">
-          <div>
-            <small>DATA SOURCES</small>
-            <strong>4+ merchant and storefront sources</strong>
-          </div>
-          <div>
-            <small>FRESHNESS</small>
-            <strong>Scheduled snapshots</strong>
-          </div>
-          <div>
-            <small>DELIVERY</small>
-            <strong>API / dashboard-ready outputs</strong>
-          </div>
-        </div>
-        <div className="architecture-flow" aria-label="Shopify system architecture">
-          <span>INGESTION</span>
-          <i>-&gt;</i>
-          <span>NORMALIZATION</span>
-          <i>-&gt;</i>
-          <span>SNAPSHOTS</span>
-          <i>-&gt;</i>
-          <span>PRICING INTELLIGENCE</span>
-          <i>-&gt;</i>
-          <span>API / DASHBOARD</span>
-        </div>
-        <div className="case-study-details">
-          <div className="case-detail">
-            <small>DATA MODEL</small>
-            <strong>Merchant / Product / Variant / Price / Inventory / Order</strong>
-          </div>
-          <div className="case-detail">
-            <small>BUSINESS QUESTIONS</small>
-            <strong>What changed? Which products are moving? Where is margin under pressure?</strong>
-          </div>
-          <div className="case-detail">
-            <small>TECHNOLOGY</small>
-            <strong>Merchant connectors / normalized records / scheduled jobs / typed API contract</strong>
-          </div>
-          <div className="case-detail">
-            <small>RESULTS</small>
-            <strong>A reusable decision layer for comparing merchants, products, pricing, and inventory.</strong>
-          </div>
-        </div>
-        <div className="featured-panel">
-          <div className="panel-top">
-            <span>SHOPIFY / EXAMPLE OUTPUT</span>
-            <span>REPRESENTATIVE</span>
-          </div>
-          <pre className="case-output">
-            <code>
-              {JSON.stringify(
-                {
-                  merchant: 'example-store',
-                  product: 'Canvas Weekender',
-                  price: 129.0,
-                  inventory: 42,
-                  price_change: '-8.4%',
-                  snapshot_at: '2026-09-18T06:42:00Z',
-                },
-                null,
-                2
-              )}
-            </code>
-          </pre>
-          <div className="panel-bottom">
-            <span>TYPED RECORD / JSON</span>
-            <span>SNAPSHOT-READY</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="process-section" id="about">
-        <div className="section-heading">
-          <p className="eyebrow">Capability / the ADL method</p>
-          <h2>
-            From scattered signals
-            <br />
-            <em>to clear decisions.</em>
-          </h2>
-        </div>
-        <div className="process-grid">
-          <div>
-            <span>01</span>
-            <h3>Collect</h3>
-            <p>We connect every source, from APIs and files to the systems your teams already use.</p>
-          </div>
-          <div>
-            <span>02</span>
-            <h3>Transform</h3>
-            <p>We clean, normalize, and model it into a dependable data foundation.</p>
-          </div>
-          <div>
-            <span>03</span>
-            <h3>Enrich</h3>
-            <p>We add context, quality checks, and the business logic your people need.</p>
-          </div>
-          <div>
-            <span>04</span>
-            <h3>Serve</h3>
-            <p>We ship useful interfaces that make the right answer easy to reach.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="catalog-section" id="catalog">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">Examples of what we build</p>
-            <h2>
-              Choose a lane.
-              <br />
-              <em>Find the useful.</em>
-            </h2>
-          </div>
-          <p className="catalog-summary">
-            These modules are product patterns, not a marketplace. We shape the right system around your sources, questions,
-            and decisions.
-          </p>
-        </div>
-        <div className="catalog-filters" role="group" aria-label="Catalog category">
-          {CATALOG_FILTERS.map((filter) => (
-            <button
-              key={filter.id}
-              className={catalogFilter === filter.id ? 'catalog-filter active' : 'catalog-filter'}
-              onClick={() => setCatalogFilter(filter.id)}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-        <div className="product-grid">
-          {visibleModules.map((module) => (
-            <article
-              className="product-card"
-              key={module.id}
-              onClick={() => openModule(module.id)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') openModule(module.id)
-              }}
-              role="button"
-              tabIndex={0}
-            >
-              <div className="product-card-top">
-                <span>
-                  ADL {module.kind.toUpperCase()} / {module.category}
-                </span>
-                <span className="freshness">
-                  <i /> {module.status}
-                </span>
-              </div>
-              <h3>{module.name}</h3>
-              <p>{module.description}</p>
-              <div className="module-contract">
-                <div>
-                  <small>INPUT</small>
-                  <strong>{module.input}</strong>
-                </div>
-                <div>
-                  <small>PROCESS</small>
-                  <strong>{module.process}</strong>
-                </div>
-                <div>
-                  <small>OUTPUT</small>
-                  <strong>{module.outputs.join(' / ')}</strong>
-                </div>
-              </div>
-              <div className="product-meta">
-                <div>
-                  <small>FRESHNESS</small>
-                  <strong>{module.freshness}</strong>
-                </div>
-                <div>
-                  <small>STATUS</small>
-                  <strong>{module.status}</strong>
-                </div>
-              </div>
-              <button
-                className={`run-module ${runningModule === module.id ? 'run-module-active' : ''}`}
-                onClick={(event) => {
-                  event.stopPropagation()
-                  runModule(module.id)
-                }}
-                disabled={runningModule === module.id}
-              >
-                {runningModule === module.id ? 'Queued for execution' : 'Run module'} <span aria-hidden="true">-&gt;</span>
-              </button>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {selectedModule && (
-        <div
-          className="module-overlay"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setSelectedModule(null)
-          }}
-        >
-          <section className="module-detail" role="dialog" aria-modal="true" aria-labelledby="module-detail-title">
-            <button className="module-close" onClick={() => setSelectedModule(null)} aria-label="Close module details">
-              x
-            </button>
-            <div className="module-detail-header">
-              <span className="eyebrow">ADL MODULE / {selectedModule.category}</span>
-              <span className="module-status">
-                <i /> {selectedModule.status}
-              </span>
-            </div>
-            <div className="module-journey" aria-label="Module journey">
-              <span className="active">01 DISCOVER</span>
-              <span>02 INSPECT</span>
-              <span>03 TEST</span>
-              <span>04 INTEGRATE</span>
-            </div>
-            <h2 id="module-detail-title">{selectedModule.name}</h2>
-            <p className="module-purpose">{selectedModule.purpose}</p>
-            <div className="module-architecture">
-              <small>ARCHITECTURE</small>
-              <div>
-                {selectedModule.architecture.map((stage, index) => (
-                  <span key={stage}>
-                    <strong>{stage}</strong>
-                    {index < selectedModule.architecture.length - 1 && <i>-&gt;</i>}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="detail-grid">
-              <div>
-                <small>INPUTS</small>
-                <strong>{selectedModule.input}</strong>
-              </div>
-              <div>
-                <small>PROCESS</small>
-                <strong>{selectedModule.process}</strong>
-              </div>
-              <div>
-                <small>OUTPUTS</small>
-                <strong>{selectedModule.outputs.join(' / ')}</strong>
-              </div>
-              <div>
-                <small>FRESHNESS</small>
-                <strong>{selectedModule.freshness}</strong>
-              </div>
-              <div>
-                <small>DATA MODEL</small>
-                <strong>{selectedModule.dataModel}</strong>
-              </div>
-              <div>
-                <small>LAST RUN</small>
-                <strong>{selectedModule.lastRun}</strong>
-              </div>
-            </div>
-            <div className="module-detail-actions">
-              <button className="button button-quiet" onClick={() => scrollToSection('playground')}>
-                Inspect data <span aria-hidden="true">-&gt;</span>
-              </button>
-              <button
-                className={`button button-primary ${runningModule === selectedModule.id ? 'run-module-active' : ''}`}
-                onClick={() => runModule(selectedModule.id)}
-                disabled={runningModule === selectedModule.id}
-              >
-                {runningModule === selectedModule.id ? 'Test running...' : 'Test sample'}{' '}
-                <span aria-hidden="true">-&gt;</span>
-              </button>
-              <div className="integration-actions">
-                <small>INTEGRATE</small>
-                <a href="/docs">API docs</a>
-                <button onClick={() => scrollToSection('playground')}>JSON</button>
-                <span>CSV</span>
-                <span>Parquet</span>
-              </div>
-            </div>
-          </section>
-        </div>
-      )}
-
-      <section className="cta-section" id="contact">
-        <p className="eyebrow">Have a business question the tools do not answer?</p>
-        <h2>
-          Tell us what you need.
-          <br />
-          <em>We&apos;ll build the system.</em>
-        </h2>
-        <a className="button button-primary" href="mailto:hello@aingadatalabs.com?subject=Book%20a%20discovery%20call">
-          Book demo <span aria-hidden="true">-&gt;</span>
-        </a>
       </section>
 
       <footer className="footer">
         <div>
-          <button className="brand brand-button" onClick={() => scrollToSection('top')}>
+          <a className="brand brand-button" href="/">
             <span className="brand-mark">ADL</span>
             <span>Ainga Data Labs</span>
-          </button>
+          </a>
           <p>Engineering clarity into complex data.</p>
         </div>
-        <div className="footer-contact">
-          <span>Have a system in mind?</span>
-          <a
-            href="https://mail.google.com/mail/?view=cm&fs=1&to=hello%40aingadatalabs.com"
-            target="_blank"
-            rel="noreferrer"
-          >
-            hello@aingadatalabs.com <span>-&gt;</span>
-          </a>
-        </div>
-        <div className="footer-actions">
-          <a className="footer-primary" href="mailto:hello@aingadatalabs.com?subject=Book%20a%20discovery%20call">
-            Book demo <span>-&gt;</span>
-          </a>
-          <div>
-            <a href="/docs">API docs</a>
-            <button onClick={() => scrollToSection('catalog')}>Catalog</button>
-          </div>
-        </div>
         <div className="footer-socials">
-          <span>Social ecosystem</span>
           <div>
-            <a href="https://x.com/aingadatalabs" target="_blank" rel="noreferrer" aria-label="Ainga Data Labs on X">
-              <img src={xLogo} alt="X Logo" />
-            </a>
-            <a href="https://youtube.com/@aingadatalabs" target="_blank" rel="noreferrer" aria-label="Ainga Data Labs on YouTube">
-              <img src={youtubeLogo} alt="YouTube Logo" />
-            </a>
-            <a href="https://github.com/aingadatalabs" target="_blank" rel="noreferrer" aria-label="Ainga Data Labs on GitHub">
-              <img src={githubLogo} alt="GitHub Logo" />
-            </a>
-            <a href="https://www.reddit.com/user/aingadatalabs/" target="_blank" rel="noreferrer" aria-label="Ainga Data Labs on Reddit">
-              <img src={redditLogo} alt="Reddit Logo" />
-            </a>
+            <a href="https://x.com/aingadatalabs" target="_blank" rel="noreferrer"><img src={xLogo} alt="X" /></a>
+            <a href="https://youtube.com/@aingadatalabs" target="_blank" rel="noreferrer"><img src={youtubeLogo} alt="YouTube" /></a>
+            <a href="https://github.com/aingadatalabs" target="_blank" rel="noreferrer"><img src={githubLogo} alt="GitHub" /></a>
+            <a href="https://www.reddit.com/user/aingadatalabs/" target="_blank" rel="noreferrer"><img src={redditLogo} alt="Reddit" /></a>
           </div>
         </div>
         <span className="footer-meta">Ainga Data Labs / 2026</span>
@@ -1183,9 +889,16 @@ export function LandingPage(): JSX.Element {
 }
 
 // ============================================================================
-// App Router Entry Point
+// 4. ROUTER ENTRY POINT
 // ============================================================================
 
 export default function App(): JSX.Element {
-  return window.location.pathname === '/docs' ? <DocsPage /> : <LandingPage />
+  const path = window.location.pathname
+  if (path === '/docs') return <DocsPage />
+  if (path === '/services') return <ServicesPage />
+  if (path === '/products') return <ProductsPage />
+  if (path === '/work') return <WorkPage />
+  if (path === '/insights') return <InsightsPage />
+  if (path === '/contact') return <ContactPage />
+  return <LandingPage />
 }
