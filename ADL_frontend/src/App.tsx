@@ -452,13 +452,15 @@ export function ProductsPage(): JSX.Element {
 
             <div className="product-card-action">
               {product.id === 'coming-soon' ? (
-                <a className="button button-quiet service-cta" href="mailto:hello@aingadatalabs.com?subject=Early%20Access%20Inquiry">
+                <a className="button button-quiet service-cta" href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=Early%20Access%20Inquiry" target="_blank" rel="noopener noreferrer">
                   Request Early Access <span aria-hidden="true">&rarr;</span>
                 </a>
               ) : (
                 <a 
                   className="button button-quiet service-cta" 
-                  href={`mailto:hello@aingadatalabs.com?subject=System%20Inquiry%20for%20${encodeURIComponent(product.name)}`}
+                  href={`https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=System%20Inquiry%20for%20${encodeURIComponent(product.name)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   Discuss System for <strong>{product.name.split('—')[0].trim()}</strong> <span aria-hidden="true">&rarr;</span>
                 </a>
@@ -509,7 +511,9 @@ export function ServicesPage(): JSX.Element {
             <div className="services-card-action">
               <a 
                 className="button button-quiet service-cta" 
-                href={`mailto:hello@aingadatalabs.com?subject=Scope%20${encodeURIComponent(section.category)}%20System`}
+                href={`https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=Scope%20${encodeURIComponent(section.category)}%20System`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Scope <strong>{section.category}</strong> System <span aria-hidden="true">&rarr;</span>
               </a>
@@ -658,7 +662,9 @@ export function InsightsPage(): JSX.Element {
               ) : (
                 <a 
                   className="button button-quiet service-cta" 
-                  href={`mailto:hello@aingadatalabs.com?subject=Inquiry%20Regarding%20${encodeURIComponent(insight.title)}`}
+                  href={`https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=Inquiry%20Regarding%20${encodeURIComponent(insight.title)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   Request Full Report <span aria-hidden="true">&rarr;</span>
                 </a>
@@ -687,11 +693,23 @@ export function ContactPage(): JSX.Element {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const subject = encodeURIComponent(`ADL Scope Inquiry: ${formData.need} - ${formData.company || formData.name}`)
-    const body = encodeURIComponent(
-      `Name: ${formData.name}\nWork Email: ${formData.email}\nCompany: ${formData.company}\nNeed: ${formData.need}\nBudget: ${formData.budget || 'N/A'}\nTimeline: ${formData.timeline || 'N/A'}\n\nProblem Description:\n${formData.problem}`
-    )
-    window.location.href = `mailto:hello@aingadatalabs.com?subject=${subject}&body=${body}`
+
+    const subject = `ADL Scope Inquiry: ${formData.need} - ${formData.company || formData.name}`
+    const body = `Name: ${formData.name}
+Work Email: ${formData.email}
+Company: ${formData.company}
+Need: ${formData.need}
+Budget: ${formData.budget || 'N/A'}
+Timeline: ${formData.timeline || 'N/A'}
+
+Problem Description:
+${formData.problem}`
+
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`
+
+    window.open(gmailUrl, '_blank', 'noopener,noreferrer')
     setSubmitted(true)
   }
 
@@ -711,8 +729,10 @@ export function ContactPage(): JSX.Element {
         {submitted ? (
           <div className="form-success-card">
             <span className="status-dot-inline" />
-            <h2>Inquiry Prepared</h2>
-            <p>Your mail client has been opened with your scope parameters pre-filled. Click send to dispatch your inquiry to <strong>hello@aingadatalabs.com</strong>.</p>
+            <h2>Inquiry Dispatched to Gmail</h2>
+            <p>
+              A new tab has opened with your inquiry parameters pre-filled in Gmail. Simply click <strong>Send</strong> to deliver your message to <strong>hello@aingadatalabs.com</strong>.
+            </p>
             <button type="button" className="button button-quiet" onClick={() => setSubmitted(false)}>
               Submit Another Inquiry <span aria-hidden="true">&rarr;</span>
             </button>
