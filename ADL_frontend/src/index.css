@@ -2158,3 +2158,101 @@ button {
   color: #34d399 !important;
   text-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
 }
+/* ==========================================================================
+   MOBILE RESPONSIVE BREAKPOINTS (ADL CORE)
+   ========================================================================== */
+
+/* Tablet & Smaller Screens (< 1024px) */
+@media (max-width: 1024px) {
+  .hero {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .hero-visual {
+    width: 100%;
+  }
+
+  .products-grid-container,
+  .services-grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+/* Mobile Devices (< 768px) */
+@media (max-width: 768px) {
+  /* Header & Navigation */
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .nav-cta {
+    display: block;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Hero Section */
+  .hero-copy h1 {
+    font-size: 2.25rem;
+    line-height: 1.2;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-actions .button {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  /* Form & Grid Layouts */
+  .form-row-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .pipeline-flow {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .work-cases-container,
+  .insights-grid-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Small Handheld Displays (< 480px) */
+@media (max-width: 480px) {
+  .hero-copy h1 {
+    font-size: 1.85rem;
+  }
+
+  .brand span {
+    font-size: 0.95rem;
+  }
+
+  .node-step {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
