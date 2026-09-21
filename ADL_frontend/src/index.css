@@ -2126,3 +2126,35 @@ button {
   font-weight: 600;
   background: rgba(0, 255, 136, 0.06);
 }
+/* Fix spacing between INGEST and changing text */
+.node-text-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem; /* Creates clean space between action verb and source string */
+}
+
+/* Make all step text vibrant terminal green with letter spacing */
+.green-accent {
+  color: #10b981 !important; /* Bright matrix green */
+  letter-spacing: 0.16em !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+/* Interactive Box Hover Glow Effect */
+.pipeline-node.interactive-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer;
+}
+
+.pipeline-node.interactive-card:hover {
+  background-color: #0d1a12 !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+.pipeline-node.interactive-card:hover .green-accent {
+  color: #34d399 !important;
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+}

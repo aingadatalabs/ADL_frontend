@@ -1,15 +1,91 @@
-import { useState, type JSX } from 'react'
+import React, { useState, useEffect, type JSX } from 'react'
+import { Footer } from './components/Footer'
 import './footer.css'
-import xLogo from './assets/x.webp'
-import youtubeLogo from './assets/youtube.png'
-import githubLogo from './assets/github.png'
-import redditLogo from './assets/reddit.webp'
 
-// ============================================================================
-// 1. DATA CONTRACTS & SCHEMAS
-// ============================================================================
+// ==============================================================================
+// 1. DATA CONTRACTS, TYPES & SCHEMAS
+// ==============================================================================
 
-const PRODUCTS_DATA = [
+export interface ProductItem {
+  readonly id: string
+  readonly category: string
+  readonly name: string
+  readonly tagline: string
+  readonly description: string
+  readonly inputs: string
+  readonly outputs: string
+  readonly architecture: readonly string[]
+  readonly status: string
+}
+
+export interface ServiceSubItem {
+  readonly title: string
+  readonly desc: string
+}
+
+export interface ServiceSection {
+  readonly category: string
+  readonly badge: string
+  readonly summary: string
+  readonly items: readonly ServiceSubItem[]
+}
+
+export interface WorkMetric {
+  readonly metric: string
+  readonly label: string
+  readonly detail: string
+}
+
+export interface CaseStudyItem {
+  readonly id: string
+  readonly title: string
+  readonly badge: string
+  readonly summary: string
+  readonly problem: string
+  readonly approach: string
+  readonly systemBuilt: string
+  readonly execution: string
+  readonly results: readonly string[]
+  readonly techStack: readonly string[]
+}
+
+export interface InsightCategoryItem {
+  readonly id: string
+  readonly label: string
+}
+
+export interface InsightItem {
+  readonly id: string
+  readonly category: string
+  readonly badge: string
+  readonly title: string
+  readonly readTime: string
+  readonly date: string
+  readonly summary: string
+  readonly topics: readonly string[]
+}
+
+export interface PipelineNode {
+  readonly id: 'ingest' | 'transform' | 'deliver'
+  readonly label: string
+  readonly name: string
+  readonly metric: string
+  readonly schema: string
+  readonly fields: string
+  readonly payload: string
+  readonly latency: string
+}
+
+export type PipelineNodeId = PipelineNode['id']
+
+const DYNAMIC_SOURCES = [
+  'Market sources',
+  'Rental APIs',
+  'E-Commerce Feeds',
+  'Live Telemetry',
+] as const
+
+const PRODUCTS_DATA: readonly ProductItem[] = [
   {
     id: 'ssip',
     category: 'COMMERCE / 001',
@@ -67,7 +143,7 @@ const PRODUCTS_DATA = [
   },
 ] as const
 
-const SERVICES_DATA = [
+const SERVICES_DATA: readonly ServiceSection[] = [
   {
     category: 'DATA INFRASTRUCTURE',
     badge: '01 / INFRA',
@@ -84,7 +160,7 @@ const SERVICES_DATA = [
     badge: '02 / EXTRACTION',
     summary: 'Automated web collection turning changing surfaces into structured data.',
     items: [
-      { title: 'Web scraping services', desc: 'Reliable web scrapers designed to bypass anti-bot mechanisms and schema drifts.' },
+      { title: 'Web extraction systems', desc: 'Reliable web extraction systems designed to withstand changing site structures, schemas, and source conditions.' },
       { title: 'Web data extraction', desc: 'Clean extraction pipelines outputting validated JSON, Parquet, and relational records.' },
       { title: 'Website data pipeline', desc: 'Scheduled extraction pipelines delivering fresh web data straight to your warehouse.' },
       { title: 'Automated web data collection', desc: 'Zero-babysitting automated crawlers running on dedicated scheduling infrastructure.' },
@@ -114,14 +190,14 @@ const SERVICES_DATA = [
   },
 ] as const
 
-const WORK_RESULTS_METRICS = [
-  { metric: '20,078+', label: 'Product Records Extracted', detail: 'Across 56 e-commerce storefronts' },
-  { metric: '99.8%', label: 'Pipeline Uptime SLA', detail: 'Zero-babysitting automated orchestration' },
+const WORK_RESULTS_METRICS: readonly WorkMetric[] = [
+  { metric: '20,078+', label: 'Product Records Processed', detail: 'Across 56 active e-commerce pipeline runs' },
+  { metric: '99.8%', label: 'Pipeline Uptime SLA', detail: 'Measured across active managed pipelines' },
   { metric: '12ms', label: 'Transform Latency', detail: 'In-memory DuckDB transformation budget' },
   { metric: '100%', label: 'Schema Validation Rate', detail: 'Typed contracts across Bronze, Silver, & Gold' },
 ] as const
 
-const CASE_STUDIES_DATA = [
+const CASE_STUDIES_DATA: readonly CaseStudyItem[] = [
   {
     id: 'sip',
     title: 'Shopify Supplements Intelligence Pipeline (SSIP)',
@@ -172,7 +248,7 @@ const CASE_STUDIES_DATA = [
   },
 ] as const
 
-const INSIGHTS_CATEGORIES = [
+const INSIGHTS_CATEGORIES: readonly InsightCategoryItem[] = [
   { id: 'all', label: 'All Insights' },
   { id: 'reports', label: 'Reports' },
   { id: 'studies', label: 'Data Studies' },
@@ -183,7 +259,7 @@ const INSIGHTS_CATEGORIES = [
 
 type InsightCategory = (typeof INSIGHTS_CATEGORIES)[number]['id']
 
-const INSIGHTS_DATA = [
+const INSIGHTS_DATA: readonly InsightItem[] = [
   {
     id: 'report-001',
     category: 'reports',
@@ -246,18 +322,16 @@ const INSIGHTS_DATA = [
   },
 ] as const
 
-const PIPELINE_NODES = [
+const PIPELINE_NODES: readonly PipelineNode[] = [
   { id: 'ingest', label: 'INGEST', name: 'Market sources', metric: '3', schema: 'source.v2', fields: 'symbol, venue, timestamp', payload: 'GET /sources/market?region=global', latency: 'Awaiting source response' },
   { id: 'transform', label: 'TRANSFORM', name: 'Normalize + enrich', metric: '12ms', schema: 'quote.v1.4', fields: 'symbol, price, currency, as_of', payload: '{ "symbol": "NVDA", "currency": "USD" }', latency: '12ms transform budget' },
   { id: 'deliver', label: 'DELIVER', name: 'Your API layer', metric: 'TYPED', schema: 'response.v1', fields: 'data, meta, trace_id', payload: '200 OK / application-json', latency: 'Local demo response' },
 ] as const
 
-type PipelineNodeId = (typeof PIPELINE_NODES)[number]['id']
-
 const ENDPOINT_SAMPLES = {
   market: {
-    category: 'Financial',
-    label: 'Market snapshot',
+    category: 'Sample Payload',
+    label: 'Market snapshot API Contract',
     path: '/v1/markets/quotes?symbol=NVDA',
     requestPath: '/api/v1/markets/quotes.json?symbol=NVDA',
     status: '200 OK',
@@ -265,12 +339,12 @@ const ENDPOINT_SAMPLES = {
   },
 } as const
 
-/// ============================================================================
-// Shared Navigation Topbar with Active State & Brand Homepage Link
+// ============================================================================
+// 2. SHARED COMPONENTS
 // ============================================================================
 
 function HeaderTopbar(): JSX.Element {
-  const currentPath = window.location.pathname
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/'
 
   return (
     <nav className="topbar" aria-label="Main navigation">
@@ -305,7 +379,7 @@ function HeaderTopbar(): JSX.Element {
       {/* CALL TO ACTION */}
       <div className="header-actions">
         <a className="nav-cta nav-cta-primary" href="/contact">
-          Book demo <span aria-hidden="true">-&gt;</span>
+          Discuss a data problem <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
     </nav>
@@ -348,7 +422,7 @@ export function ProductsPage(): JSX.Element {
                 {product.architecture.map((stage, idx) => (
                   <span key={stage}>
                     <code>{stage}</code>
-                    {idx < product.architecture.length - 1 && <i className="flow-arrow">-&gt;</i>}
+                    {idx < product.architecture.length - 1 && <i className="flow-arrow">&rarr;</i>}
                   </span>
                 ))}
               </div>
@@ -368,14 +442,14 @@ export function ProductsPage(): JSX.Element {
             <div className="product-card-action">
               {product.id === 'coming-soon' ? (
                 <a className="button button-quiet service-cta" href="mailto:hello@aingadatalabs.com?subject=Early%20Access%20Inquiry">
-                  Request Early Access <span aria-hidden="true">-&gt;</span>
+                  Request Early Access <span aria-hidden="true">&rarr;</span>
                 </a>
               ) : (
                 <a 
                   className="button button-quiet service-cta" 
-                  href={`mailto:hello@aingadatalabs.com?subject=Demo%20Inquiry%20for%20${encodeURIComponent(product.name)}`}
+                  href={`mailto:hello@aingadatalabs.com?subject=System%20Inquiry%20for%20${encodeURIComponent(product.name)}`}
                 >
-                  Book Demo for <strong>{product.name.split('—')[0].trim()}</strong> <span aria-hidden="true">-&gt;</span>
+                  Discuss System for <strong>{product.name.split('—')[0].trim()}</strong> <span aria-hidden="true">&rarr;</span>
                 </a>
               )}
             </div>
@@ -383,16 +457,7 @@ export function ProductsPage(): JSX.Element {
         ))}
       </div>
 
-      <footer className="footer">
-        <div>
-          <a className="brand brand-button" href="/">
-            <span className="brand-mark">ADL</span>
-            <span>Ainga Data Labs</span>
-          </a>
-          <p>Engineering clarity into complex data.</p>
-        </div>
-        <span className="footer-meta">Ainga Data Labs / 2026</span>
-      </footer>
+      <Footer />
     </main>
   )
 }
@@ -435,23 +500,14 @@ export function ServicesPage(): JSX.Element {
                 className="button button-quiet service-cta" 
                 href={`mailto:hello@aingadatalabs.com?subject=Scope%20${encodeURIComponent(section.category)}%20System`}
               >
-                Scope <strong>{section.category}</strong> System <span aria-hidden="true">-&gt;</span>
+                Scope <strong>{section.category}</strong> System <span aria-hidden="true">&rarr;</span>
               </a>
             </div>
           </section>
         ))}
       </div>
 
-      <footer className="footer">
-        <div>
-          <a className="brand brand-button" href="/">
-            <span className="brand-mark">ADL</span>
-            <span>Ainga Data Labs</span>
-          </a>
-          <p>Engineering clarity into complex data.</p>
-        </div>
-        <span className="footer-meta">Ainga Data Labs / 2026</span>
-      </footer>
+      <Footer />
     </main>
   )
 }
@@ -514,7 +570,7 @@ export function WorkPage(): JSX.Element {
               <ul>
                 {cs.results.map((res, i) => (
                   <li key={i}>
-                    <span className="bullet-green">✓</span> {res}
+                    <span className="bullet-green">&check;</span> {res}
                   </li>
                 ))}
               </ul>
@@ -532,16 +588,7 @@ export function WorkPage(): JSX.Element {
         ))}
       </div>
 
-      <footer className="footer">
-        <div>
-          <a className="brand brand-button" href="/">
-            <span className="brand-mark">ADL</span>
-            <span>Ainga Data Labs</span>
-          </a>
-          <p>Engineering clarity into complex data.</p>
-        </div>
-        <span className="footer-meta">Ainga Data Labs / 2026</span>
-      </footer>
+      <Footer />
     </main>
   )
 }
@@ -568,6 +615,7 @@ export function InsightsPage(): JSX.Element {
         {INSIGHTS_CATEGORIES.map((cat) => (
           <button
             key={cat.id}
+            type="button"
             className={`catalog-filter ${activeFilter === cat.id ? 'active' : ''}`}
             onClick={() => setActiveFilter(cat.id)}
           >
@@ -581,7 +629,7 @@ export function InsightsPage(): JSX.Element {
           <article className="insight-card" key={insight.id}>
             <div className="insight-card-top">
               <span className="card-index">{insight.badge}</span>
-              <span className="insight-meta">{insight.date} • {insight.readTime}</span>
+              <span className="insight-meta">{insight.date} &bull; {insight.readTime}</span>
             </div>
 
             <h2 className="insight-title">{insight.title}</h2>
@@ -601,7 +649,7 @@ export function InsightsPage(): JSX.Element {
                   className="button button-quiet service-cta" 
                   href={`mailto:hello@aingadatalabs.com?subject=Inquiry%20Regarding%20${encodeURIComponent(insight.title)}`}
                 >
-                  Request Full Report <span aria-hidden="true">-&gt;</span>
+                  Request Full Report <span aria-hidden="true">&rarr;</span>
                 </a>
               )}
             </div>
@@ -609,16 +657,7 @@ export function InsightsPage(): JSX.Element {
         ))}
       </div>
 
-      <footer className="footer">
-        <div>
-          <a className="brand brand-button" href="/">
-            <span className="brand-mark">ADL</span>
-            <span>Ainga Data Labs</span>
-          </a>
-          <p>Engineering clarity into complex data.</p>
-        </div>
-        <span className="footer-meta">Ainga Data Labs / 2026</span>
-      </footer>
+      <Footer />
     </main>
   )
 }
@@ -635,9 +674,9 @@ export function ContactPage(): JSX.Element {
   })
   const [submitted, setSubmitted] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const subject = encodeURIComponent(`ADL Inquiry: ${formData.need} - ${formData.company || formData.name}`)
+    const subject = encodeURIComponent(`ADL Scope Inquiry: ${formData.need} - ${formData.company || formData.name}`)
     const body = encodeURIComponent(
       `Name: ${formData.name}\nWork Email: ${formData.email}\nCompany: ${formData.company}\nNeed: ${formData.need}\nBudget: ${formData.budget || 'N/A'}\nTimeline: ${formData.timeline || 'N/A'}\n\nProblem Description:\n${formData.problem}`
     )
@@ -663,8 +702,8 @@ export function ContactPage(): JSX.Element {
             <span className="status-dot-inline" />
             <h2>Inquiry Prepared</h2>
             <p>Your mail client has been opened with your scope parameters pre-filled. Click send to dispatch your inquiry to <strong>hello@aingadatalabs.com</strong>.</p>
-            <button className="button button-quiet" onClick={() => setSubmitted(false)}>
-              Submit Another Inquiry <span aria-hidden="true">-&gt;</span>
+            <button type="button" className="button button-quiet" onClick={() => setSubmitted(false)}>
+              Submit Another Inquiry <span aria-hidden="true">&rarr;</span>
             </button>
           </div>
         ) : (
@@ -757,23 +796,13 @@ export function ContactPage(): JSX.Element {
 
             <div className="form-action">
               <button type="submit" className="button button-primary submit-btn">
-                Submit Inquiry <span aria-hidden="true">-&gt;</span>
+                Submit Inquiry <span aria-hidden="true">&rarr;</span>
               </button>
             </div>
           </form>
         )}
       </div>
-
-      <footer className="footer">
-        <div>
-          <a className="brand brand-button" href="/">
-            <span className="brand-mark">ADL</span>
-            <span>Ainga Data Labs</span>
-          </a>
-          <p>Engineering clarity into complex data.</p>
-        </div>
-        <span className="footer-meta">Ainga Data Labs / 2026</span>
-      </footer>
+      <Footer />
     </main>
   )
 }
@@ -784,34 +813,45 @@ export function DocsPage(): JSX.Element {
       <HeaderTopbar />
       <div className="docs-layout">
         <aside className="docs-sidebar">
-          <p className="eyebrow">API REFERENCE</p>
+          <p className="eyebrow">CONTRACT REFERENCE</p>
           <h1>ADL Schema Docs</h1>
-          <p>Production API contracts, schemas, and interactive query samples.</p>
+          <p>Sample typed payload contracts and structural API response benchmarks.</p>
           <div className="docs-sidebar-section">
             <small>ENDPOINTS</small>
-            <button className="docs-nav-item active"><b>GET</b> Market snapshot</button>
+            <button type="button" className="docs-nav-item active"><b>GET</b> Market snapshot</button>
           </div>
         </aside>
 
         <section className="docs-content">
-          <div className="docs-breadcrumb">API REFERENCE / MARKET SNAPSHOT API</div>
+          <div className="docs-breadcrumb">SCHEMA CONTRACTS / SAMPLE PAYLOAD API</div>
           <div className="docs-heading">
             <span className="docs-method">GET</span>
             <h2>/v1/markets/quotes</h2>
           </div>
-          <p className="docs-description">Retrieve a normalized quote snapshot for a public market symbol.</p>
+          <p className="docs-description">Sample normalized payload schema contract for custom data pipeline delivery endpoints.</p>
           <pre className="docs-response">
             <code>{ENDPOINT_SAMPLES.market.response}</code>
           </pre>
         </section>
       </div>
+      <Footer/>
     </main>
   )
 }
 
 export function LandingPage(): JSX.Element {
-  const [selectedNode, setSelectedNode] = useState<PipelineNodeId>('transform')
-  const selectedPipelineNode = PIPELINE_NODES.find((node) => node.id === selectedNode) ?? PIPELINE_NODES[1]
+  const [selectedNode, setSelectedNode] = useState<PipelineNodeId>('ingest')
+  const [sourceIndex, setSourceIndex] = useState<number>(0)
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null)
+
+  const selectedPipelineNode = PIPELINE_NODES.find((node) => node.id === selectedNode) ?? PIPELINE_NODES[0]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSourceIndex((prev) => (prev + 1) % DYNAMIC_SOURCES.length)
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <main className="site-shell">
@@ -819,44 +859,89 @@ export function LandingPage(): JSX.Element {
       <section className="hero" id="top">
         <div className="hero-copy">
           <p className="eyebrow"><span className="status-dot" /> DATA ENGINEERING & MARKET INTELLIGENCE LABS</p>
-          <h1>The data your decisions need, <em>without the maintenance burden.</em></h1>
+          
+          {/* UPDATED B2B HERO HIERARCHY */}
+          <h1>Turn messy external data into reliable systems.</h1>
           <p className="hero-lede">
-            Ainga Data Labs (ADL) builds and manages production-grade data pipelines, web extraction systems, and market intelligence APIs.
+            ADL builds and operates web extraction pipelines, data infrastructure, intelligence systems, and APIs that turn changing external data into clean, decision-ready feeds.
           </p>
+          
           <p className="audience-tag-strip">
-            <strong>BUILT FOR:</strong> Data Engineers • Product Teams • E-Commerce Operators
+            <strong>BUILT FOR:</strong> Data Teams &bull; Product Teams &bull; E-Commerce Operators
           </p>
+          
           <div className="hero-actions">
             <a className="button button-primary" href="/contact">
-              Book a Demo <span aria-hidden="true">-&gt;</span>
+              Discuss a data problem <span aria-hidden="true">&rarr;</span>
             </a>
             <a className="button button-quiet" href="/products">
-              Explore Products <span aria-hidden="true">-&gt;</span>
+              Explore our systems <span aria-hidden="true">&rarr;</span>
             </a>
           </div>
         </div>
 
+        {/* Right side: Hero Visual */}
         <div className="hero-visual">
           <div className="visual-header">
             <span><span className="live-pulse" /> PIPELINE / INTERFACE PREVIEW</span>
             <span>ADL / CORE-01</span>
           </div>
+
           <div className="pipeline-map">
-            {PIPELINE_NODES.map((node, index) => (
-              <div key={node.id}>
-                <button
-                  className={`pipeline-node ${selectedNode === node.id ? 'active-node' : ''}`}
+            {PIPELINE_NODES.map((node, index) => {
+              const isFirstStep = index === 0
+              const labelText = isFirstStep ? DYNAMIC_SOURCES[sourceIndex] : node.name
+              const isHovered = hoveredNodeId === node.id
+              const isActive = selectedPipelineNode.id === node.id
+
+              return (
+                <div 
+                  key={node.id} 
+                  className={`pipeline-node ${isActive ? 'active' : ''}`}
                   onClick={() => setSelectedNode(node.id)}
+                  onMouseEnter={() => setHoveredNodeId(node.id)}
+                  onMouseLeave={() => setHoveredNodeId(null)}
+                  style={{
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    cursor: 'pointer',
+                    backgroundColor: isHovered ? '#0f1f16' : undefined,
+                    borderColor: isHovered ? '#10b981' : undefined,
+                    boxShadow: isHovered ? '0 0 20px rgba(16, 185, 129, 0.35)' : undefined,
+                    transform: isHovered ? 'translateY(-1px)' : undefined,
+                  }}
                 >
-                  <span className="node-icon">0{index + 1}</span>
-                  <span className="node-copy">
-                    <small>{node.label}</small>
-                    <strong>{node.name}</strong>
-                  </span>
-                  <b>{node.metric}</b>
-                </button>
-              </div>
-            ))}
+                  <div className="node-step">
+                    <span className="step-num">0{index + 1}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <span 
+                        className="node-type" 
+                        style={{ 
+                          color: '#10b981', 
+                          fontWeight: 600,
+                          letterSpacing: '0.16em' 
+                        }}
+                      >
+                        {node.label}
+                      </span>
+                      <strong 
+                        className="node-label" 
+                        style={{ 
+                          letterSpacing: '0.16em', 
+                          color: '#10b981',
+                          fontWeight: 600,
+                          transition: 'color 0.3s ease, opacity 0.3s ease',
+                          display: 'inline-block'
+                        }}
+                      >
+                        {labelText}
+                      </strong>
+                    </div>
+                  </div>
+                  <span className="node-metric">{node.metric}</span>
+                </div>
+              )
+            })}
+
             <div className="schema-inspector">
               <span>SCHEMA / {selectedPipelineNode.schema}</span>
               <strong>{selectedPipelineNode.fields}</strong>
@@ -866,34 +951,18 @@ export function LandingPage(): JSX.Element {
         </div>
       </section>
 
-      <footer className="footer">
-        <div>
-          <a className="brand brand-button" href="/">
-            <span className="brand-mark">ADL</span>
-            <span>Ainga Data Labs</span>
-          </a>
-          <p>Engineering clarity into complex data.</p>
-        </div>
-        <div className="footer-socials">
-          <div>
-            <a href="https://x.com/aingadatalabs" target="_blank" rel="noreferrer"><img src={xLogo} alt="X" /></a>
-            <a href="https://youtube.com/@aingadatalabs" target="_blank" rel="noreferrer"><img src={youtubeLogo} alt="YouTube" /></a>
-            <a href="https://github.com/aingadatalabs" target="_blank" rel="noreferrer"><img src={githubLogo} alt="GitHub" /></a>
-            <a href="https://www.reddit.com/user/aingadatalabs/" target="_blank" rel="noreferrer"><img src={redditLogo} alt="Reddit" /></a>
-          </div>
-        </div>
-        <span className="footer-meta">Ainga Data Labs / 2026</span>
-      </footer>
+      <Footer />
     </main>
   )
 }
 
-// ============================================================================
+// ==============================================================================
 // 4. ROUTER ENTRY POINT
-// ============================================================================
+// ==============================================================================
 
 export default function App(): JSX.Element {
-  const path = window.location.pathname
+  const path = typeof window !== 'undefined' ? window.location.pathname : '/'
+
   if (path === '/docs') return <DocsPage />
   if (path === '/services') return <ServicesPage />
   if (path === '/products') return <ProductsPage />
