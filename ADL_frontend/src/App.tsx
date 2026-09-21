@@ -1,5 +1,7 @@
 import React, { useState, useEffect, type JSX } from 'react'
 import { Footer } from './components/Footer'
+import LegalDocsApp from './LegalDocsApp'
+import SsipApp from './SsipApp'
 import './footer.css'
 
 // ==============================================================================
@@ -402,6 +404,8 @@ function HeaderTopbar(): JSX.Element {
 // ============================================================================
 
 export function ProductsPage(): JSX.Element {
+  const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+
   return (
     <main className="docs-shell">
       <HeaderTopbar />
@@ -414,60 +418,86 @@ export function ProductsPage(): JSX.Element {
       </header>
 
       <div className="products-grid-container">
-        {PRODUCTS_DATA.map((product) => (
-          <article className="product-portfolio-card" key={product.id}>
-            <div className="product-card-top-bar">
-              <span className="card-index">{product.category}</span>
-              <span className={`product-status-badge ${product.id === 'coming-soon' ? 'status-labs' : ''}`}>
-                <span className="status-dot-inline" /> {product.status}
-              </span>
-            </div>
+        {PRODUCTS_DATA.map((product) => {
+          const isSSIP = product.id === 'ssip'
+          const tryUrl = isLocal ? '/ssip' : 'https://ssip.aingadatalabs.com'
 
-            <h2 className="product-card-title">{product.name}</h2>
-            <p className="product-tagline">{product.tagline}</p>
-            <p className="product-description">{product.description}</p>
-
-            <div className="product-architecture-strip">
-              <span className="meta-label">ARCHITECTURE:</span>
-              <div className="pipeline-flow">
-                {product.architecture.map((stage, idx) => (
-                  <span key={stage}>
-                    <code>{stage}</code>
-                    {idx < product.architecture.length - 1 && <i className="flow-arrow">&rarr;</i>}
-                  </span>
-                ))}
+          return (
+            <article className="product-portfolio-card" key={product.id}>
+              <div className="product-card-top-bar">
+                <span className="card-index">{product.category}</span>
+                <span className={`product-status-badge ${product.id === 'coming-soon' ? 'status-labs' : ''}`}>
+                  <span className="status-dot-inline" /> {product.status}
+                </span>
               </div>
-            </div>
 
-            <div className="product-contract-footer">
-              <div className="contract-col">
-                <small>INPUT SOURCES</small>
-                <strong>{product.inputs}</strong>
-              </div>
-              <div className="contract-col">
-                <small>OUTPUT FORMAT</small>
-                <strong>{product.outputs}</strong>
-              </div>
-            </div>
+              <h2 className="product-card-title">{product.name}</h2>
+              <p className="product-tagline">{product.tagline}</p>
+              <p className="product-description">{product.description}</p>
 
-            <div className="product-card-action">
-              {product.id === 'coming-soon' ? (
-                <a className="button button-quiet service-cta" href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=Early%20Access%20Inquiry" target="_blank" rel="noopener noreferrer">
-                  Request Early Access <span aria-hidden="true">&rarr;</span>
-                </a>
-              ) : (
-                <a 
-                  className="button button-quiet service-cta" 
-                  href={`https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=System%20Inquiry%20for%20${encodeURIComponent(product.name)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Discuss System for <strong>{product.name.split('—')[0].trim()}</strong> <span aria-hidden="true">&rarr;</span>
-                </a>
-              )}
-            </div>
-          </article>
-        ))}
+              <div className="product-architecture-strip">
+                <span className="meta-label">ARCHITECTURE:</span>
+                <div className="pipeline-flow">
+                  {product.architecture.map((stage, idx) => (
+                    <span key={stage}>
+                      <code>{stage}</code>
+                      {idx < product.architecture.length - 1 && <i className="flow-arrow">&rarr;</i>}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="product-contract-footer">
+                <div className="contract-col">
+                  <small>INPUT SOURCES</small>
+                  <strong>{product.inputs}</strong>
+                </div>
+                <div className="contract-col">
+                  <small>OUTPUT FORMAT</small>
+                  <strong>{product.outputs}</strong>
+                </div>
+              </div>
+
+              <div className="product-card-action">
+                {isSSIP ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', width: '100%' }}>
+                    <a 
+                      className="button button-primary service-cta" 
+                      href={tryUrl}
+                      target={isLocal ? '_self' : '_blank'}
+                      rel="noopener noreferrer"
+                      style={{ textAlign: 'center', justifyContent: 'center' }}
+                    >
+                      Try SSIP <span aria-hidden="true">&rarr;</span>
+                    </a>
+                    <a 
+                      className="button button-quiet service-cta" 
+                      href={`https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=System%20Inquiry%20for%20SSIP`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textAlign: 'center', justifyContent: 'center' }}
+                    >
+                      Discuss System <span aria-hidden="true">&rarr;</span>
+                    </a>
+                  </div>
+                ) : product.id === 'coming-soon' ? (
+                  <a className="button button-quiet service-cta" href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=Early%20Access%20Inquiry" target="_blank" rel="noopener noreferrer">
+                    Request Early Access <span aria-hidden="true">&rarr;</span>
+                  </a>
+                ) : (
+                  <a 
+                    className="button button-quiet service-cta" 
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=System%20Inquiry%20for%20${encodeURIComponent(product.name)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Discuss System for <strong>{product.name.split('—')[0].trim()}</strong> <span aria-hidden="true">&rarr;</span>
+                  </a>
+                )}
+              </div>
+            </article>
+          )
+        })}
       </div>
 
       <Footer />
@@ -891,7 +921,6 @@ export function LandingPage(): JSX.Element {
         <div className="hero-copy">
           <p className="eyebrow"><span className="status-dot" /> DATA ENGINEERING & MARKET INTELLIGENCE LABS</p>
           
-          {/* UPDATED B2B HERO HIERARCHY */}
           <h1>Turn messy external data into reliable systems.</h1>
           <p className="hero-lede">
             ADL builds and operates web extraction pipelines, data infrastructure, intelligence systems, and APIs that turn changing external data into clean, decision-ready feeds.
@@ -988,7 +1017,7 @@ export function LandingPage(): JSX.Element {
 }
 
 // ==============================================================================
-// 4. ROUTER ENTRY POINT
+// 4. SINGLE ROUTER ENTRY POINT
 // ==============================================================================
 
 export default function App(): JSX.Element {
@@ -1000,5 +1029,7 @@ export default function App(): JSX.Element {
   if (path === '/work') return <WorkPage />
   if (path === '/insights') return <InsightsPage />
   if (path === '/contact') return <ContactPage />
+  if (path === '/legal') return <LegalDocsApp />
+  if (path === '/ssip') return <SsipApp />
   return <LandingPage />
 }
