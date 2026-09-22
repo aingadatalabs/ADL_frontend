@@ -2,6 +2,7 @@ import React, { useState, useEffect, type JSX } from 'react'
 import { Footer } from './components/Footer'
 import LegalDocsApp from './LegalDocsApp'
 import SsipApp from './SsipApp'
+import SsipApiDemo from './SsipApiDemo'
 import './footer.css'
 
 // ==============================================================================
@@ -361,13 +362,11 @@ function HeaderTopbar(): JSX.Element {
 
   return (
     <nav className="topbar" aria-label="Main navigation">
-      {/* BRAND LOGO — REDIRECTS TO HOMEPAGE (/) */}
       <a className="brand brand-button" href="/" aria-label="Return to Ainga Data Labs homepage">
         <span className="brand-mark">ADL</span>
         <span>Ainga Data Labs</span>
       </a>
 
-      {/* PRIMARY NAVIGATION LINKS */}
       <div className="nav-links">
         <a href="/products" className={currentPath === '/products' ? 'active-link' : ''}>
           Products
@@ -389,7 +388,6 @@ function HeaderTopbar(): JSX.Element {
         </a>
       </div>
 
-      {/* CALL TO ACTION */}
       <div className="header-actions">
         <a className="nav-cta nav-cta-primary" href="/contact">
           Discuss a data problem <span aria-hidden="true">&rarr;</span>
@@ -916,6 +914,63 @@ export function LandingPage(): JSX.Element {
 
   return (
     <main className="site-shell">
+      {/* INJECTED PRODUCTION HOVER LIGHTING CSS */}
+      <style>{`
+        .button-primary {
+          background-color: #10b981;
+          color: #030705;
+          font-weight: 700;
+          padding: 0.85rem 1.75rem;
+          border-radius: 6px;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          border: 1px solid #10b981;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 0 0px rgba(16, 185, 129, 0);
+        }
+
+        .button-primary:hover {
+          background-color: #34d399;
+          border-color: #34d399;
+          transform: translateY(-2px);
+          box-shadow: 0 0 25px rgba(16, 185, 129, 0.6), 0 0 10px rgba(52, 211, 153, 0.4);
+          filter: brightness(1.1);
+        }
+
+        .button-quiet {
+          background-color: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: #ffffff;
+          font-weight: 600;
+          padding: 0.85rem 1.75rem;
+          border-radius: 6px;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .button-quiet:hover {
+          border-color: #10b981;
+          color: #10b981;
+          transform: translateY(-2px);
+          box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+          background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        .nav-cta-primary {
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-cta-primary:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        }
+      `}</style>
+
       <HeaderTopbar />
       <section className="hero" id="top">
         <div className="hero-copy">
@@ -940,7 +995,6 @@ export function LandingPage(): JSX.Element {
           </div>
         </div>
 
-        {/* Right side: Hero Visual */}
         <div className="hero-visual">
           <div className="visual-header">
             <span><span className="live-pulse" /> PIPELINE / INTERFACE PREVIEW</span>
@@ -1030,6 +1084,7 @@ export default function App(): JSX.Element {
   if (path === '/insights') return <InsightsPage />
   if (path === '/contact') return <ContactPage />
   if (path === '/legal') return <LegalDocsApp />
+  if (path === '/ssip/api-demo') return <SsipApiDemo />
   if (path === '/ssip') return <SsipApp />
   return <LandingPage />
 }
