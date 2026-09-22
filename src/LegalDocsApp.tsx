@@ -1,8 +1,41 @@
-import type { JSX } from 'react'
+import { useState, useEffect, type JSX, type MouseEvent } from 'react'
 
-export default function LegalDocsApp(): JSX.Element {
+export interface LegalDocsAppProps {
+  readonly initialTab?: 'terms' | 'privacy'
+}
+
+export default function LegalDocsApp({ initialTab = 'terms' }: LegalDocsAppProps): JSX.Element {
+  const [activeTab, setActiveTab] = useState<'terms' | 'privacy'>(initialTab)
   const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost'
   const mainSiteUrl = isLocal ? '/' : 'https://aingadatalabs.com'
+
+  useEffect(() => {
+    setActiveTab(initialTab)
+    const targetId = initialTab === 'privacy' ? 'privacy-policy' : 'terms-of-service'
+    const element = document.getElementById(targetId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [initialTab])
+
+  const handleBackToMain = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    window.history.pushState({}, '', '/')
+    window.dispatchEvent(new Event('popstate'))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleSidebarClick = (e: MouseEvent<HTMLAnchorElement>, tab: 'terms' | 'privacy', targetId: string) => {
+    e.preventDefault()
+    setActiveTab(tab)
+    const targetUrl = tab === 'terms' ? '/terms' : '/privacy'
+    window.history.pushState({}, '', targetUrl)
+
+    const element = document.getElementById(targetId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   return (
     <div className="legal-shell">
@@ -63,6 +96,21 @@ export default function LegalDocsApp(): JSX.Element {
           margin-bottom: 0.25rem;
         }
 
+        .sidebar-link {
+          color: #9ca3af;
+          text-decoration: none;
+          font-size: 0.9rem;
+          border-left: 2px solid transparent;
+          padding-left: 0.75rem;
+          transition: all 0.2s ease;
+        }
+
+        .sidebar-link.active {
+          color: #ffffff;
+          border-left-color: #10b981;
+          font-weight: 600;
+        }
+
         @media (max-width: 868px) {
           .legal-grid {
             grid-template-columns: 1fr;
@@ -88,13 +136,23 @@ export default function LegalDocsApp(): JSX.Element {
 
       <header className="legal-header">
         <div>
-          <a href={mainSiteUrl} style={{ textDecoration: 'none', color: '#10b981', fontWeight: 700, fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <a 
+            href={mainSiteUrl} 
+            onClick={handleBackToMain}
+            style={{ textDecoration: 'none', color: '#10b981', fontWeight: 700, fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
             <span style={{ backgroundColor: '#10b981', color: '#030705', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.9rem' }}>ADL</span>
             Ainga Data Labs
           </a>
           <p style={{ margin: '0.5rem 0 0', color: '#6b7280', fontSize: '0.875rem' }}>Legal Documentation &amp; Governance Portal</p>
         </div>
-        <a href={mainSiteUrl} style={{ color: '#9ca3af', textDecoration: 'none', fontSize: '0.875rem' }}>&larr; Back to Main Site</a>
+        <a 
+          href={mainSiteUrl} 
+          onClick={handleBackToMain}
+          style={{ color: '#9ca3af', textDecoration: 'none', fontSize: '0.875rem' }}
+        >
+          &larr; Back to Main Site
+        </a>
       </header>
 
       <div className="legal-grid">
@@ -102,8 +160,20 @@ export default function LegalDocsApp(): JSX.Element {
         <aside className="legal-sidebar">
           <p style={{ fontSize: '0.75rem', letterSpacing: '0.12em', color: '#10b981', fontWeight: 700, margin: '0 0 1rem' }}>GOVERNANCE DOCUMENTS</p>
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <a href="#terms-of-service" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '0.9rem', borderLeft: '2px solid #10b981', paddingLeft: '0.75rem' }}>1. Terms of Service</a>
-            <a href="#privacy-policy" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '0.9rem', borderLeft: '2px solid #10b981', paddingLeft: '0.75rem' }}>2. Privacy Policy</a>
+            <a 
+              href="/terms" 
+              className={`sidebar-link ${activeTab === 'terms' ? 'active' : ''}`}
+              onClick={(e) => handleSidebarClick(e, 'terms', 'terms-of-service')}
+            >
+              1. Terms of Service
+            </a>
+            <a 
+              href="/privacy" 
+              className={`sidebar-link ${activeTab === 'privacy' ? 'active' : ''}`}
+              onClick={(e) => handleSidebarClick(e, 'privacy', 'privacy-policy')}
+            >
+              2. Privacy Policy
+            </a>
           </nav>
         </aside>
 
