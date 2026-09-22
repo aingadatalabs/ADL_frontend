@@ -2256,89 +2256,39 @@ button {
     gap: 0.25rem;
   }
 }
-/* --- Base Navbar Structure --- */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap; /* Allows mobile drawer to drop below */
-}
-
-.topbar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.nav-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-/* Hide hamburger on Desktop */
-.mobile-menu-toggle {
-  display: none;
-  background: transparent;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 0.5rem;
-}
-
-/* --- Mobile Breakpoint (Phones & Small Tablets) --- */
+/* --- MOBILE NAVIGATION DRAWER OVERRIDES --- */
 @media (max-width: 900px) {
-  /* Show hamburger */
   .mobile-menu-toggle {
-    display: flex;
+    display: flex !important;
   }
-  
-  /* Desktop Layout Overrides */
+
+  .topbar {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
   .topbar-header {
-    width: 100%;
-  }
-
-  /* Hide navigation wrapper by default on mobile */
-  .nav-wrapper {
-    display: none;
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-    padding-top: 1rem;
-    gap: 1rem;
-  }
-
-  /* Show navigation wrapper when isMobileMenuOpen state is true */
-  .nav-wrapper.is-open {
-    display: flex;
-  }
-
-  /* Stack links vertically on mobile */
-  .nav-links {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-  }
-
-  /* Force Mega Menus to flow inline on mobile rather than absolute position */
-  .mega-menu {
-    position: static !important;
+    display: flex !important;
+    justify-content: space-between !important;
     width: 100% !important;
-    margin-top: 0.5rem;
-    border: 1px solid #333;
   }
-}
 
-/* Desktop Breakpoint (Laptops & Monitors) */
-@media (min-width: 901px) {
-  .topbar-header {
-    width: auto;
-  }
   .nav-wrapper {
-    width: auto;
-    flex: 1;
-    margin-left: 2rem;
+    display: none !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    padding-top: 1rem !important;
+  }
+
+  .nav-wrapper.is-open {
+    display: flex !important;
+  }
+
+  .nav-links {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    gap: 0.75rem !important;
   }
 }
