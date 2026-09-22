@@ -1,4 +1,5 @@
 import type { JSX, MouseEvent } from 'react'
+import '../footer.css' // Guarantee styles load on all sub-routes
 
 export function Footer(): JSX.Element {
   const termsUrl = '/terms'
@@ -19,7 +20,7 @@ export function Footer(): JSX.Element {
   }
 
   return (
-    <footer className="site-footer">
+    <footer className="site-footer" style={{ width: '100%', marginTop: 'auto', display: 'block' }}>
       <div className="footer-content">
         <div className="footer-brand-col">
           <div className="brand brand-button">
