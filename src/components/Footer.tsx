@@ -1,15 +1,8 @@
 import type { JSX } from 'react'
 
 export function Footer(): JSX.Element {
-  const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-
-  const termsUrl = isLocal 
-    ? '/legal#terms-of-service' 
-    : 'https://docs.aingadatalabs.com/#terms-of-service'
-
-  const privacyUrl = isLocal 
-    ? '/legal#privacy-policy' 
-    : 'https://docs.aingadatalabs.com/#privacy-policy'
+  const termsUrl = '/terms'
+  const privacyUrl = '/privacy'
 
   return (
     <footer className="site-footer">
@@ -83,18 +76,10 @@ export function Footer(): JSX.Element {
           >
             hello@aingadatalabs.com
           </a>
-          <a 
-            href={privacyUrl} 
-            target={isLocal ? '_self' : '_blank'} 
-            rel="noopener noreferrer"
-          >
+          <a href={privacyUrl}>
             Privacy Policy
           </a>
-          <a 
-            href={termsUrl} 
-            target={isLocal ? '_self' : '_blank'} 
-            rel="noopener noreferrer"
-          >
+          <a href={termsUrl}>
             Terms of Service
           </a>
         </div>
