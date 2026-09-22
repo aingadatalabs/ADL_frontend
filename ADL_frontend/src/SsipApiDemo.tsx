@@ -1,4 +1,4 @@
-import { useState, useEffect, type JSX } from 'react'
+import { useState, useEffect, useCallback, type JSX } from 'react'
 import { Footer } from './components/Footer'
 
 export interface ApiEndpointConfig {
@@ -7,6 +7,35 @@ export interface ApiEndpointConfig {
   path: string
   description: string
   columns: { key: string; label: string }[]
+}
+
+export interface ProductRecord {
+  product_id?: string
+  sku?: string
+  product_title?: string
+  vendor?: string
+  price_usd?: number
+  market_median_price_usd?: number
+  price_variance_vs_market_pct?: number
+  is_in_stock?: boolean
+  discount_pct?: number
+  review_count?: number
+  average_rating?: number
+  sentiment_score_positive?: number
+  has_active_ads?: boolean
+  active_creative_count?: number
+  brand_country_of_origin?: string
+  category?: string
+  store_url?: string
+  [key: string]: unknown
+}
+
+export interface ApiResponsePayload {
+  merchant_id?: string
+  store_url?: string
+  record_count?: number
+  data?: ProductRecord[]
+  [key: string]: unknown
 }
 
 const ENDPOINTS: ApiEndpointConfig[] = [
@@ -106,25 +135,31 @@ export default function SsipApiDemo(): JSX.Element {
   const [selectedMerchant, setSelectedMerchant] = useState<string>('kaged')
   const [viewMode, setViewMode] = useState<'table' | 'json' | 'curl'>('table')
   const [loading, setLoading] = useState<boolean>(false)
-  const [responsePayload, setResponsePayload] = useState<any>(null)
+  const [responsePayload, setResponsePayload] = useState<ApiResponsePayload | null>(null)
   const [executionTime, setExecutionTime] = useState<number | null>(null)
   const [copied, setCopied] = useState<boolean>(false)
 
   const activePath = selectedEndpoint.path.replace('{merchant_id}', selectedMerchant)
-  const apiBaseUrl = 'http://127.0.0.1:8000'
+  
+  // Point directly to active deployed Render engine (adl-ssip-engine)
+  const apiBaseUrl = isLocal 
+    ? 'https://adl-ssip-engine.onrender.com' 
+    : 'https://ssip.aingadatalabs.com'
+
   const fullRequestUrl = `${apiBaseUrl}${activePath}?limit=20`
   const curlCommand = `curl -X 'GET' \\\n  '${fullRequestUrl}' \\\n  -H 'accept: application/json'`
 
-  const handleExecuteRequest = async () => {
+  const handleExecuteRequest = useCallback(async (): Promise<void> => {
     setLoading(true)
     const startTime = performance.now()
 
     try {
       const res = await fetch(fullRequestUrl)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = await res.json()
+      const data: ApiResponsePayload = await res.json()
       setResponsePayload(data)
     } catch {
+      // Fallback mock payload if request fails or network drops
       setResponsePayload({
         merchant_id: selectedMerchant,
         store_url: `https://${selectedMerchant}.com`,
@@ -171,16 +206,37 @@ export default function SsipApiDemo(): JSX.Element {
       setExecutionTime(Math.round(endTime - startTime))
       setLoading(false)
     }
-  }
+  }, [fullRequestUrl, selectedMerchant])
 
   useEffect(() => {
-    handleExecuteRequest()
-  }, [selectedEndpoint, selectedMerchant])
+    let isMounted = true
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+    void (async () => {
+      if (isMounted) {
+        await handleExecuteRequest()
+      }
+    })()
+
+    return () => {
+      isMounted = false
+    }
+  }, [handleExecuteRequest])
+
+  const copyToClipboard = (text: string): void => {
+    void navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const renderTableCell = (row: ProductRecord, key: string): JSX.Element | string => {
+    const val = row[key]
+    if (typeof val === 'boolean') {
+      return val ? 'YES' : 'NO'
+    }
+    if (val === null || val === undefined) {
+      return 'N/A'
+    }
+    return String(val)
   }
 
   return (
@@ -437,7 +493,7 @@ export default function SsipApiDemo(): JSX.Element {
               <input type="text" className="ssip-input" value="20 records (Server Hard Cap)" disabled />
             </div>
 
-            <button type="button" className="btn-run" onClick={handleExecuteRequest} disabled={loading}>
+            <button type="button" className="btn-run" onClick={() => void handleExecuteRequest()} disabled={loading}>
               {loading ? 'EXECUTING QUERY...' : 'RUN LIVE REQUEST →'}
             </button>
           </div>
@@ -475,11 +531,11 @@ export default function SsipApiDemo(): JSX.Element {
                     </tr>
                   </thead>
                   <tbody>
-                    {responsePayload?.data?.map((row: any, idx: number) => (
+                    {responsePayload?.data?.map((row: ProductRecord, idx: number) => (
                       <tr key={idx}>
                         {selectedEndpoint.columns.map((col) => (
                           <td key={col.key} style={{ color: col.key.includes('title') ? '#ffffff' : '#d1d5db' }}>
-                            {typeof row[col.key] === 'boolean' ? (row[col.key] ? 'YES' : 'NO') : row[col.key] ?? 'N/A'}
+                            {renderTableCell(row, col.key)}
                           </td>
                         ))}
                       </tr>
