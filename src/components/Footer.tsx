@@ -1,8 +1,22 @@
-import type { JSX } from 'react'
+import type { JSX, MouseEvent } from 'react'
 
 export function Footer(): JSX.Element {
   const termsUrl = '/terms'
   const privacyUrl = '/privacy'
+
+  const handleLegalNavigation = (e: MouseEvent<HTMLAnchorElement>, path: string) => {
+    e.preventDefault()
+    window.history.pushState({}, '', path)
+    window.dispatchEvent(new Event('popstate'))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleSpaNavigation = (e: MouseEvent<HTMLAnchorElement>, path: string) => {
+    e.preventDefault()
+    window.history.pushState({}, '', path)
+    window.dispatchEvent(new Event('popstate'))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   return (
     <footer className="site-footer">
@@ -53,20 +67,20 @@ export function Footer(): JSX.Element {
 
         <div className="footer-links-col">
           <span className="footer-heading">PLATFORM</span>
-          <a href="/products">Products</a>
-          <a href="/services">Services</a>
-          <a href="/work">Case Studies</a>
+          <a href="/products" onClick={(e) => handleSpaNavigation(e, '/products')}>Products</a>
+          <a href="/services" onClick={(e) => handleSpaNavigation(e, '/services')}>Services</a>
+          <a href="/work" onClick={(e) => handleSpaNavigation(e, '/work')}>Case Studies</a>
         </div>
 
         <div className="footer-links-col">
           <span className="footer-heading">RESOURCES</span>
-          <a href="/docs">Documentation</a>
-          <a href="/insights">Insights</a>
+          <a href="/docs" onClick={(e) => handleSpaNavigation(e, '/docs')}>Documentation</a>
+          <a href="/insights" onClick={(e) => handleSpaNavigation(e, '/insights')}>Insights</a>
         </div>
 
         <div className="footer-links-col">
           <span className="footer-heading">COMPANY</span>
-          <a href="/contact">Contact</a>
+          <a href="/contact" onClick={(e) => handleSpaNavigation(e, '/contact')}>Contact</a>
           <a 
             href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=Inquiry%20for%20Ainga%20Data%20Labs" 
             target="_blank"
@@ -76,10 +90,16 @@ export function Footer(): JSX.Element {
           >
             hello@aingadatalabs.com
           </a>
-          <a href={privacyUrl}>
+          <a 
+            href={privacyUrl}
+            onClick={(e) => handleLegalNavigation(e, privacyUrl)}
+          >
             Privacy Policy
           </a>
-          <a href={termsUrl}>
+          <a 
+            href={termsUrl}
+            onClick={(e) => handleLegalNavigation(e, termsUrl)}
+          >
             Terms of Service
           </a>
         </div>

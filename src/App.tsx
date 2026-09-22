@@ -360,36 +360,76 @@ const ENDPOINT_SAMPLES = {
 function HeaderTopbar(): JSX.Element {
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/'
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetPath: string) => {
+    e.preventDefault()
+    window.history.pushState({}, '', targetPath)
+    window.dispatchEvent(new Event('popstate'))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
     <nav className="topbar" aria-label="Main navigation">
-      <a className="brand brand-button" href="/" aria-label="Return to Ainga Data Labs homepage">
+      <a 
+        className="brand brand-button" 
+        href="/" 
+        onClick={(e) => handleNavClick(e, '/')}
+        aria-label="Return to Ainga Data Labs homepage"
+      >
         <span className="brand-mark">ADL</span>
         <span>Ainga Data Labs</span>
       </a>
 
       <div className="nav-links">
-        <a href="/products" className={currentPath === '/products' ? 'active-link' : ''}>
+        <a 
+          href="/products" 
+          className={currentPath === '/products' ? 'active-link' : ''}
+          onClick={(e) => handleNavClick(e, '/products')}
+        >
           Products
         </a>
-        <a href="/services" className={currentPath === '/services' ? 'active-link' : ''}>
+        <a 
+          href="/services" 
+          className={currentPath === '/services' ? 'active-link' : ''}
+          onClick={(e) => handleNavClick(e, '/services')}
+        >
           Services
         </a>
-        <a href="/work" className={currentPath === '/work' ? 'active-link' : ''}>
+        <a 
+          href="/work" 
+          className={currentPath === '/work' ? 'active-link' : ''}
+          onClick={(e) => handleNavClick(e, '/work')}
+        >
           Work
         </a>
-        <a href="/insights" className={currentPath === '/insights' ? 'active-link' : ''}>
+        <a 
+          href="/insights" 
+          className={currentPath === '/insights' ? 'active-link' : ''}
+          onClick={(e) => handleNavClick(e, '/insights')}
+        >
           Insights
         </a>
-        <a href="/docs" className={currentPath === '/docs' ? 'active-link' : ''}>
+        <a 
+          href="/docs" 
+          className={currentPath === '/docs' ? 'active-link' : ''}
+          onClick={(e) => handleNavClick(e, '/docs')}
+        >
           Docs
         </a>
-        <a href="/contact" className={currentPath === '/contact' ? 'active-link' : ''}>
+        <a 
+          href="/contact" 
+          className={currentPath === '/contact' ? 'active-link' : ''}
+          onClick={(e) => handleNavClick(e, '/contact')}
+        >
           Contact Us
         </a>
       </div>
 
       <div className="header-actions">
-        <a className="nav-cta nav-cta-primary" href="/contact">
+        <a 
+          className="nav-cta nav-cta-primary" 
+          href="/contact"
+          onClick={(e) => handleNavClick(e, '/contact')}
+        >
           Discuss a data problem <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
@@ -1075,16 +1115,29 @@ export function LandingPage(): JSX.Element {
 // ==============================================================================
 
 export default function App(): JSX.Element {
-  const path = typeof window !== 'undefined' ? window.location.pathname : '/'
+  const [currentPath, setCurrentPath] = useState<string>(
+    typeof window !== 'undefined' ? window.location.pathname : '/'
+  )
 
-  if (path === '/docs') return <DocsPage />
-  if (path === '/services') return <ServicesPage />
-  if (path === '/products') return <ProductsPage />
-  if (path === '/work') return <WorkPage />
-  if (path === '/insights') return <InsightsPage />
-  if (path === '/contact') return <ContactPage />
-  if (path === '/legal') return <LegalDocsApp />
-  if (path === '/ssip/api-demo') return <SsipApiDemo />
-  if (path === '/ssip') return <SsipApp />
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname)
+    }
+
+    window.addEventListener('popstate', handleLocationChange)
+    return () => window.removeEventListener('popstate', handleLocationChange)
+  }, [])
+
+  if (currentPath === '/docs') return <DocsPage />
+  if (currentPath === '/services') return <ServicesPage />
+  if (currentPath === '/products') return <ProductsPage />
+  if (currentPath === '/work') return <WorkPage />
+  if (currentPath === '/insights') return <InsightsPage />
+  if (currentPath === '/contact') return <ContactPage />
+  if (currentPath === '/legal') return <LegalDocsApp />
+  if (currentPath === '/terms') return <LegalDocsApp />
+  if (currentPath === '/privacy') return <LegalDocsApp />
+  if (currentPath === '/ssip/api-demo') return <SsipApiDemo />
+  if (currentPath === '/ssip') return <SsipApp />
   return <LandingPage />
 }
