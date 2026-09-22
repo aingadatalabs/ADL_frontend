@@ -442,7 +442,14 @@ function HeaderTopbar(): JSX.Element {
 // ============================================================================
 
 export function ProductsPage(): JSX.Element {
-  const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+  const tryUrl = '/ssip'
+
+  const handleTrySsipClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    window.history.pushState({}, '', '/ssip')
+    window.dispatchEvent(new Event('popstate'))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   return (
     <main className="docs-shell">
@@ -458,7 +465,6 @@ export function ProductsPage(): JSX.Element {
       <div className="products-grid-container">
         {PRODUCTS_DATA.map((product) => {
           const isSSIP = product.id === 'ssip'
-          const tryUrl = isLocal ? '/ssip' : 'https://ssip.aingadatalabs.com'
 
           return (
             <article className="product-portfolio-card" key={product.id}>
@@ -502,8 +508,7 @@ export function ProductsPage(): JSX.Element {
                     <a 
                       className="button button-primary service-cta" 
                       href={tryUrl}
-                      target={isLocal ? '_self' : '_blank'}
-                      rel="noopener noreferrer"
+                      onClick={handleTrySsipClick}
                       style={{ textAlign: 'center', justifyContent: 'center' }}
                     >
                       Try SSIP <span aria-hidden="true">&rarr;</span>
@@ -1135,8 +1140,8 @@ export default function App(): JSX.Element {
   if (currentPath === '/insights') return <InsightsPage />
   if (currentPath === '/contact') return <ContactPage />
   if (currentPath === '/legal') return <LegalDocsApp />
-  if (currentPath === '/terms') return <LegalDocsApp />
-  if (currentPath === '/privacy') return <LegalDocsApp />
+  if (currentPath === '/terms') return <LegalDocsApp initialTab="terms" />
+  if (currentPath === '/privacy') return <LegalDocsApp initialTab="privacy" />
   if (currentPath === '/ssip/api-demo') return <SsipApiDemo />
   if (currentPath === '/ssip') return <SsipApp />
   return <LandingPage />
