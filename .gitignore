@@ -1,92 +1,41 @@
-# ==========================================
-# Build & Distribution Outputs
-# ==========================================
-dist/
-dist-ssr/
-build/
-out/
-.output/
-
-# ==========================================
-# Dependency & Package Managers
-# ==========================================
-node_modules/
-jspm_packages/
-web_modules/
-.pnpm-store/
-.npm
-.yarn-integrity
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
-# ==========================================
-# Environment & Secret Files
-# ==========================================
-.env
-.env.*
-!.env.example
-
-# ==========================================
-# Log & Runtime Files
-# ==========================================
+# Logs
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pids
-*.pid
-*.seed
-*.pid.lock
+pnpm-debug.log*
+lerna-debug.log*
 
-# ==========================================
-# Caches & Temporary Files
-# ==========================================
-.cache/
-.parcel-cache/
-.vite/
+# Dependencies & Build Output
+node_modules
+dist
+dist-ssr
+*.local
+.vite
+
+# Environment & Secret Files
+.env
+.env.*
+!.env.example
+
+# TypeScript Build & Lint Caches
 *.tsbuildinfo
+.tmp
 .eslintcache
-.stylelintcache
-.node_repl_history
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
 
-# ==========================================
-# Testing & Code Coverage
-# ==========================================
-coverage/
-*.lcov
-.nyc_output/
-cypress/screenshots/
-cypress/videos/
-playwright-report/
-test-results/
+# Testing & Coverage
+coverage
+.nyc_output
 
-# ==========================================
-# IDEs & System Metadata
-# ==========================================
+# Editor & OS Directories
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-# VSCode (Ignore workspace settings, keep team launch/tasks configs)
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
