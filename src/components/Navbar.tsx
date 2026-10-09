@@ -93,36 +93,36 @@ export function Navbar({ onNavigate }: NavbarProps) {
             )}
           </div>
 
-          {/* SERVICES DROPDOWN */}
-          <div className="nav-item-dropdown" onMouseEnter={() => setActiveDropdown('services')}>
-            <button className="dropdown-trigger" onClick={() => toggleDropdown('services')}>
-              Services <span className="arrow">▾</span>
+          {/* SOLUTIONS DROPDOWN */}
+          <div className="nav-item-dropdown" onMouseEnter={() => setActiveDropdown('solutions')}>
+            <button className="dropdown-trigger" onClick={() => toggleDropdown('solutions')}>
+              Solutions <span className="arrow">▾</span>
             </button>
-            {activeDropdown === 'services' && (
+            {activeDropdown === 'solutions' && (
               <div className="mega-menu mega-menu-wide" onMouseLeave={() => setActiveDropdown(null)}>
                 <div className="menu-group">
                   <p className="menu-heading">DATA INFRASTRUCTURE</p>
-                  <button onClick={() => handleLinkClick('services')}>Data Pipeline Development</button>
-                  <button onClick={() => handleLinkClick('services')}>ETL Pipeline Services</button>
-                  <button onClick={() => handleLinkClick('services')}>Data Engineering Services</button>
+                  <button onClick={() => handleLinkClick('solutions')}>Data Pipeline Development</button>
+                  <button onClick={() => handleLinkClick('solutions')}>ETL Pipeline Services</button>
+                  <button onClick={() => handleLinkClick('solutions')}>Data Engineering Services</button>
                 </div>
                 <div className="menu-group">
                   <p className="menu-heading">WEB DATA</p>
-                  <button onClick={() => handleLinkClick('services')}>Web Scraping Services</button>
-                  <button onClick={() => handleLinkClick('services')}>Web Data Extraction</button>
-                  <button onClick={() => handleLinkClick('services')}>Automated Web Collection</button>
+                  <button onClick={() => handleLinkClick('solutions')}>Web Scraping Services</button>
+                  <button onClick={() => handleLinkClick('solutions')}>Web Data Extraction</button>
+                  <button onClick={() => handleLinkClick('solutions')}>Automated Web Collection</button>
                 </div>
                 <div className="menu-group">
-                  <p className="menu-heading">INTELLIGENCE & APIs</p>
-                  <button onClick={() => handleLinkClick('catalog')}>Pricing & Market Intelligence</button>
-                  <button onClick={() => handleLinkClick('playground')}>Data & Market APIs</button>
+                  <p className="menu-heading">INTELLIGENCE & PROOF</p>
+                  <button onClick={() => handleLinkClick('solutions')}>Pricing & Market Intelligence</button>
+                  <button onClick={() => handleLinkClick('solutions')}>Data & Market APIs</button>
+                  <button onClick={() => handleLinkClick('solutions')}>Case Studies</button>
                 </div>
               </div>
             )}
           </div>
 
           {/* DIRECT LINKS */}
-          <button onClick={() => handleLinkClick('work')}>Work</button>
           <button onClick={() => handleLinkClick('insights')}>Insights</button>
           <a href="/docs">Docs</a>
           <button onClick={() => handleLinkClick('contact')}>Contact Us</button>

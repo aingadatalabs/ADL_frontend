@@ -16,11 +16,26 @@ export function Footer(): JSX.Element {
     e.preventDefault()
     window.history.pushState({}, '', path)
     window.dispatchEvent(new Event('popstate'))
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    const targetId = path.split('#')[1]
+    if (targetId) {
+      window.setTimeout(() => {
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' })
+      }, 0)
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 
   return (
     <footer className="site-footer" style={{ width: '100%', marginTop: 'auto', display: 'block' }}>
+      <section className="footer-contact-callout" aria-labelledby="footer-contact-title">
+        <h2 id="footer-contact-title">Have a difficult data problem?</h2>
+        <p>Tell us what you're trying to collect, normalize, monitor or expose.</p>
+        <a href="/contact" onClick={(e) => handleSpaNavigation(e, '/contact')}>
+          Discuss the problem with us <span aria-hidden="true">&rarr;</span>
+        </a>
+      </section>
+
       <div className="footer-content">
         <div className="footer-brand-col">
           <div className="brand brand-button">
@@ -66,51 +81,46 @@ export function Footer(): JSX.Element {
           </div>
         </div>
 
-        <div className="footer-links-col">
-          <span className="footer-heading">PLATFORM</span>
-          <a href="/products" onClick={(e) => handleSpaNavigation(e, '/products')}>Products</a>
-          <a href="/services" onClick={(e) => handleSpaNavigation(e, '/services')}>Services</a>
-          <a href="/work" onClick={(e) => handleSpaNavigation(e, '/work')}>Case Studies</a>
-        </div>
+        <div className="footer-shortcuts">
+          <div className="footer-links-col">
+            <span className="footer-heading">COMPANY</span>
+            <a href="/about" onClick={(e) => handleSpaNavigation(e, '/about')}>About ADL</a>
+            <a href="/about#about-principles-title" onClick={(e) => handleSpaNavigation(e, '/about#about-principles-title')}>Engineering principles</a>
+            <a href="/about#about-team-title" onClick={(e) => handleSpaNavigation(e, '/about#about-team-title')}>Founder</a>
+          </div>
 
-        <div className="footer-links-col">
-          <span className="footer-heading">RESOURCES</span>
-          <a href="/docs" onClick={(e) => handleSpaNavigation(e, '/docs')}>Documentation</a>
-          <a href="/insights" onClick={(e) => handleSpaNavigation(e, '/insights')}>Insights</a>
-        </div>
+          <div className="footer-links-col">
+            <span className="footer-heading">EXPLORE</span>
+            <a href="/products" onClick={(e) => handleSpaNavigation(e, '/products')}>Products</a>
+            <a href="/solutions" onClick={(e) => handleSpaNavigation(e, '/solutions')}>Solutions</a>
+            <a href="/solutions#case-studies" onClick={(e) => handleSpaNavigation(e, '/solutions#case-studies')}>Case Studies</a>
+            <a href="/docs" onClick={(e) => handleSpaNavigation(e, '/docs')}>Docs</a>
+          </div>
 
-        <div className="footer-links-col">
-          <span className="footer-heading">COMPANY</span>
-          <a href="/contact" onClick={(e) => handleSpaNavigation(e, '/contact')}>Contact</a>
-          <a 
-            href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=Inquiry%20for%20Ainga%20Data%20Labs" 
-            target="_blank"
-            rel="noopener noreferrer"
-            className="email-link"
-            aria-label="Send email via Gmail to Ainga Data Labs"
-          >
-            hello@aingadatalabs.com
-          </a>
-          <a 
-            href={privacyUrl}
-            onClick={(e) => handleLegalNavigation(e, privacyUrl)}
-          >
-            Privacy Policy
-          </a>
-          <a 
-            href={termsUrl}
-            onClick={(e) => handleLegalNavigation(e, termsUrl)}
-          >
-            Terms of Service
-          </a>
+          <div className="footer-links-col">
+            <span className="footer-heading">CONNECT</span>
+            <a href="/contact" onClick={(e) => handleSpaNavigation(e, '/contact')}>Contact Us</a>
+            <a
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=Inquiry%20for%20Ainga%20Data%20Labs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="email-link"
+              aria-label="Send email via Gmail to Ainga Data Labs"
+            >
+              hello@aingadatalabs.com
+            </a>
+          </div>
+
+          <div className="footer-links-col">
+            <span className="footer-heading">LEGAL</span>
+            <a href={privacyUrl} onClick={(e) => handleLegalNavigation(e, privacyUrl)}>Privacy</a>
+            <a href={termsUrl} onClick={(e) => handleLegalNavigation(e, termsUrl)}>Terms</a>
+          </div>
         </div>
       </div>
 
       <div className="footer-bottom">
         <p>&copy; {new Date().getFullYear()} Ainga Data Labs. All rights reserved.</p>
-        <div className="status-indicator">
-          <span className="status-dot-inline" /> All Pipelines Operational
-        </div>
       </div>
     </footer>
   )

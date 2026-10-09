@@ -1,13 +1,14 @@
-# ==============================================================================
-# ADL (Ainga Data Labs) Robots Configuration
-# ==============================================================================
+# ADL (Ainga Data Labs) crawler policy
+# Canonical public pages are listed in sitemap.xml.
+# Legacy /services, /work, /insights, and /legal URLs redirect to canonical routes.
 
 User-agent: *
 Allow: /
 
-# Prevent crawling of internal API fixtures and JSON assets
+# Keep machine-readable API and data payloads out of search results.
+# Public HTML routes, including /products, /solutions, /about, /docs, /contact,
+# /privacy, /terms, /ssip, and /ssip/api-demo, remain crawlable.
 Disallow: /api/
 Disallow: /*.json
 
-# Sitemap Directive
-Sitemap: https://aingadatalabs.com/sitemap.xml
+Sitemap: https://www.aingadatalabs.com/sitemap.xml

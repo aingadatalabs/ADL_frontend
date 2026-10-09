@@ -68,26 +68,6 @@ export interface InsightItem {
   readonly topics: readonly string[]
 }
 
-export interface PipelineNode {
-  readonly id: 'ingest' | 'transform' | 'deliver'
-  readonly label: string
-  readonly name: string
-  readonly metric: string
-  readonly schema: string
-  readonly fields: string
-  readonly payload: string
-  readonly latency: string
-}
-
-export type PipelineNodeId = PipelineNode['id']
-
-const DYNAMIC_SOURCES = [
-  'Market sources',
-  'Rental APIs',
-  'E-Commerce Feeds',
-  'Live Telemetry',
-] as const
-
 const PRODUCTS_DATA: readonly ProductItem[] = [
   {
     id: 'ssip',
@@ -155,6 +135,19 @@ const PRODUCTS_DATA: readonly ProductItem[] = [
     architecture: ['RESEARCH', 'PROTOTYPE', 'BENCHMARK', 'SHIP'],
     status: 'COMING SOON',
   },
+] as const
+
+const SOLUTIONS_BUILT_DATA = [
+  'Competitor price monitoring',
+  'Product catalogue ingestion',
+  'Financial market feeds',
+  'Supplier intelligence',
+  'Web scraping infrastructure',
+  'Market intelligence APIs',
+  'Entity resolution',
+  'Data enrichment',
+  'Automated research systems',
+  'Internal data platforms',
 ] as const
 
 const SERVICES_DATA: readonly ServiceSection[] = [
@@ -336,10 +329,41 @@ const INSIGHTS_DATA: readonly InsightItem[] = [
   },
 ] as const
 
-const PIPELINE_NODES: readonly PipelineNode[] = [
-  { id: 'ingest', label: 'INGEST', name: 'Market sources', metric: '3', schema: 'source.v2', fields: 'symbol, venue, timestamp', payload: 'GET /sources/market?region=global', latency: 'Awaiting source response' },
-  { id: 'transform', label: 'TRANSFORM', name: 'Normalize + enrich', metric: '12ms', schema: 'quote.v1.4', fields: 'symbol, price, currency, as_of', payload: '{ "symbol": "NVDA", "currency": "USD" }', latency: '12ms transform budget' },
-  { id: 'deliver', label: 'DELIVER', name: 'Your API layer', metric: 'TYPED', schema: 'response.v1', fields: 'data, meta, trace_id', payload: '200 OK / application-json', latency: 'Local demo response' },
+const PIPELINE_STAGES = [
+  {
+    title: 'Source connectors',
+    details: [
+      'Web & e-commerce stores',
+      'APIs & web services',
+      'Databases',
+      'Social media & creator platforms',
+      'Government portals',
+      'Research & open data',
+      'Emails',
+      'RSS feeds',
+      'Historical archives',
+    ],
+  },
+  {
+    title: 'Extraction layer',
+    details: ['HTTPS clients', 'Scrapers', 'SQL', 'File readers', 'Event consumers'],
+  },
+  {
+    title: 'Raw / Bronze',
+    details: ['Preserve original payloads', 'Timestamps', 'Source URLs', 'Provenance'],
+  },
+  {
+    title: 'Normalize / Silver',
+    details: ['Clean', 'Validate', 'Deduplicate', 'Standardize', 'Reconcile schemas'],
+  },
+  {
+    title: 'Intelligence / Gold',
+    details: ['Enrichment', 'Comparisons', 'Trends', 'Scoring', 'Analytics'],
+  },
+  {
+    title: 'Delivery layer',
+    details: ['Dashboards', 'Reports', 'Alerts', 'Client integrations'],
+  },
 ] as const
 
 const ENDPOINT_SAMPLES = {
@@ -359,16 +383,32 @@ const ENDPOINT_SAMPLES = {
 
 function HeaderTopbar(): JSX.Element {
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/'
+  const currentHash = typeof window !== 'undefined' ? window.location.hash : ''
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetPath: string) => {
     e.preventDefault()
+    setIsMenuOpen(false)
     window.history.pushState({}, '', targetPath)
     window.dispatchEvent(new Event('popstate'))
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    const targetId = targetPath.split('#')[1]
+    if (targetId) {
+      window.setTimeout(() => {
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' })
+      }, 0)
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 
   return (
-    <nav className="topbar" aria-label="Main navigation">
+    <nav
+      className="topbar"
+      aria-label="Main navigation"
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') setIsMenuOpen(false)
+      }}
+    >
       <a 
         className="brand brand-button" 
         href="/" 
@@ -379,7 +419,23 @@ function HeaderTopbar(): JSX.Element {
         <span>Ainga Data Labs</span>
       </a>
 
-      <div className="nav-links">
+      <button
+        className="mobile-menu-toggle"
+        type="button"
+        aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+        aria-expanded={isMenuOpen}
+        aria-controls="primary-navigation-links"
+        onClick={() => setIsMenuOpen((open) => !open)}
+      >
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+      </button>
+
+      <div
+        className={`nav-links${isMenuOpen ? ' is-open' : ''}`}
+        id="primary-navigation-links"
+      >
         <a 
           href="/products" 
           className={currentPath === '/products' ? 'active-link' : ''}
@@ -388,32 +444,25 @@ function HeaderTopbar(): JSX.Element {
           Products
         </a>
         <a 
-          href="/services" 
-          className={currentPath === '/services' ? 'active-link' : ''}
-          onClick={(e) => handleNavClick(e, '/services')}
+          href="/solutions"
+          className={['/solutions', '/services', '/work'].includes(currentPath) && currentHash !== '#case-studies' ? 'active-link' : ''}
+          onClick={(e) => handleNavClick(e, '/solutions')}
         >
-          Services
+          Solutions
         </a>
         <a 
-          href="/work" 
-          className={currentPath === '/work' ? 'active-link' : ''}
-          onClick={(e) => handleNavClick(e, '/work')}
+          href="/solutions#case-studies"
+          className={currentPath === '/solutions' && currentHash === '#case-studies' ? 'active-link' : ''}
+          onClick={(e) => handleNavClick(e, '/solutions#case-studies')}
         >
-          Work
+          Case Studies
         </a>
         <a 
-          href="/insights" 
-          className={currentPath === '/insights' ? 'active-link' : ''}
-          onClick={(e) => handleNavClick(e, '/insights')}
+          href="/about"
+          className={currentPath === '/about' ? 'active-link' : ''}
+          onClick={(e) => handleNavClick(e, '/about')}
         >
-          Insights
-        </a>
-        <a 
-          href="/docs" 
-          className={currentPath === '/docs' ? 'active-link' : ''}
-          onClick={(e) => handleNavClick(e, '/docs')}
-        >
-          Docs
+          About ADL
         </a>
         <a 
           href="/contact" 
@@ -424,15 +473,6 @@ function HeaderTopbar(): JSX.Element {
         </a>
       </div>
 
-      <div className="header-actions">
-        <a 
-          className="nav-cta nav-cta-primary" 
-          href="/contact"
-          onClick={(e) => handleNavClick(e, '/contact')}
-        >
-          Discuss a data problem <span aria-hidden="true">&rarr;</span>
-        </a>
-      </div>
     </nav>
   )
 }
@@ -513,8 +553,8 @@ export function ProductsPage(): JSX.Element {
                     >
                       Try SSIP <span aria-hidden="true">&rarr;</span>
                     </a>
-                    <a 
-                      className="button button-quiet service-cta" 
+                    <a
+                      className="button button-quiet service-cta"
                       href={`https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=System%20Inquiry%20for%20SSIP`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -548,133 +588,153 @@ export function ProductsPage(): JSX.Element {
   )
 }
 
-export function ServicesPage(): JSX.Element {
+export function SolutionsPage(): JSX.Element {
+  useEffect(() => {
+    if (window.location.hash !== '#case-studies') return
+
+    const frameId = window.requestAnimationFrame(() => {
+      document.getElementById('case-studies')?.scrollIntoView({ behavior: 'smooth' })
+    })
+
+    return () => window.cancelAnimationFrame(frameId)
+  }, [])
+
   return (
     <main className="docs-shell">
       <HeaderTopbar />
       <header className="services-hero-header">
-        <p className="eyebrow"><span className="status-dot" /> PRODUCTION DATA ENGINEERING & EXTRACTION</p>
-        <h1>ADL Data Services</h1>
+        <p className="eyebrow"><span className="status-dot" /> DATA SYSTEMS / ENGINEERING / INTELLIGENCE</p>
+        <h1>ADL Solutions</h1>
         <p className="hero-lede">
-          We take on source maintenance, normalization, and infrastructure burden so your team receives <strong>schema-validated</strong>, <strong>decision-ready data</strong>.
+          From changing external sources to reliable data products: explore what we build, how we deliver it, and the systems we&apos;ve put into production.
         </p>
       </header>
 
-      <div className="services-grid-container">
-        {SERVICES_DATA.map((section) => (
-          <section className="services-card-block" key={section.category}>
-            <div className="services-card-header">
-              <span className="card-index">{section.badge}</span>
-              <h2>{section.category}</h2>
-              <p className="section-summary">{section.summary}</p>
-            </div>
-            
-            <div className="services-item-list">
-              {section.items.map((item) => (
-                <div className="service-item-row" key={item.title}>
-                  <div className="service-title-group">
-                    <span className="terminal-bullet">&gt;</span>
-                    <strong>{item.title}</strong>
+      <section className="solutions-builds-section" aria-labelledby="solutions-builds-title">
+        <div className="section-heading-inline">
+          <span className="eyebrow"><span className="status-dot" /> CAPABILITIES</span>
+          <h2 id="solutions-builds-title">WHAT ADL BUILDS</h2>
+        </div>
+        <ul className="solutions-builds-grid">
+          {SOLUTIONS_BUILT_DATA.map((solution, index) => (
+            <li className="solutions-build-item" key={solution}>
+              <span className="solutions-build-number">{String(index + 1).padStart(2, '0')}</span>
+              <span>{solution}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="solutions-services-section" aria-labelledby="solutions-services-title">
+        <div className="section-heading-inline">
+          <span className="eyebrow"><span className="status-dot" /> DELIVERY CAPABILITIES</span>
+          <h2 id="solutions-services-title">How we deliver</h2>
+        </div>
+        <div className="services-grid-container">
+          {SERVICES_DATA.map((section) => (
+            <section className="services-card-block" key={section.category}>
+              <div className="services-card-header">
+                <span className="card-index">{section.badge}</span>
+                <h2>{section.category}</h2>
+                <p className="section-summary">{section.summary}</p>
+              </div>
+
+              <div className="services-item-list">
+                {section.items.map((item) => (
+                  <div className="service-item-row" key={item.title}>
+                    <div className="service-title-group">
+                      <span className="terminal-bullet">&gt;</span>
+                      <strong>{item.title}</strong>
+                    </div>
+                    <p>{item.desc}</p>
                   </div>
-                  <p>{item.desc}</p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            <div className="services-card-action">
-              <a 
-                className="button button-quiet service-cta" 
-                href={`https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=Scope%20${encodeURIComponent(section.category)}%20System`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Scope <strong>{section.category}</strong> System <span aria-hidden="true">&rarr;</span>
-              </a>
-            </div>
-          </section>
-        ))}
-      </div>
-
-      <Footer />
-    </main>
-  )
-}
-
-export function WorkPage(): JSX.Element {
-  return (
-    <main className="docs-shell">
-      <HeaderTopbar />
-      <header className="services-hero-header">
-        <p className="eyebrow"><span className="status-dot" /> PROOF OF PERFORMANCE & CASE STUDIES</p>
-        <h1>ADL Work & Systems Built</h1>
-        <p className="hero-lede">
-          We prove capability through <strong>quantifiable results</strong>, <strong>production systems</strong>, and <strong>reusable architectures</strong>.
-        </p>
-      </header>
-
-      <section className="work-results-banner">
-        <div className="results-grid">
-          {WORK_RESULTS_METRICS.map((res) => (
-            <div className="result-stat-card" key={res.label}>
-              <strong className="result-metric">{res.metric}</strong>
-              <span className="result-label">{res.label}</span>
-              <small className="result-detail">{res.detail}</small>
-            </div>
+              <div className="services-card-action">
+                <a
+                  className="button button-quiet service-cta"
+                  href={`https://mail.google.com/mail/?view=cm&fs=1&to=hello@aingadatalabs.com&su=Scope%20${encodeURIComponent(section.category)}%20System`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Scope <strong>{section.category}</strong> System <span aria-hidden="true">&rarr;</span>
+                </a>
+              </div>
+            </section>
           ))}
         </div>
       </section>
 
-      <div className="work-cases-container">
-        {CASE_STUDIES_DATA.map((cs) => (
-          <article className="case-study-card" key={cs.id}>
-            <div className="case-card-header">
-              <span className="card-index">{cs.badge}</span>
-            </div>
-            
-            <h3 className="case-title">{cs.title}</h3>
-            <p className="case-summary">{cs.summary}</p>
+      <section className="solutions-proof-section" id="case-studies" aria-labelledby="solutions-proof-title">
+        <div className="section-heading-inline">
+          <span className="eyebrow"><span className="status-dot" /> CASE STUDIES / PROOF OF PERFORMANCE</span>
+          <h2 id="solutions-proof-title">Case studies &amp; results</h2>
+        </div>
+        <div className="work-results-banner">
+          <div className="results-grid">
+            {WORK_RESULTS_METRICS.map((res) => (
+              <div className="result-stat-card" key={res.label}>
+                <strong className="result-metric">{res.metric}</strong>
+                <span className="result-label">{res.label}</span>
+                <small className="result-detail">{res.detail}</small>
+              </div>
+            ))}
+          </div>
+        </div>
 
-            <div className="case-breakdown-grid">
-              <div className="case-col">
-                <small>PROBLEM</small>
-                <p>{cs.problem}</p>
+        <div className="work-cases-container">
+          {CASE_STUDIES_DATA.map((cs) => (
+            <article className="case-study-card" key={cs.id}>
+              <div className="case-card-header">
+                <span className="card-index">{cs.badge}</span>
               </div>
-              <div className="case-col">
-                <small>APPROACH</small>
-                <p>{cs.approach}</p>
-              </div>
-              <div className="case-col">
-                <small>SYSTEM BUILT</small>
-                <p>{cs.systemBuilt}</p>
-              </div>
-              <div className="case-col">
-                <small>EXECUTION</small>
-                <p>{cs.execution}</p>
-              </div>
-            </div>
 
-            <div className="case-results-box">
-              <small>QUANTIFIABLE RESULTS</small>
-              <ul>
-                {cs.results.map((res, i) => (
-                  <li key={i}>
-                    <span className="bullet-green">&check;</span> {res}
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <h3 className="case-title">{cs.title}</h3>
+              <p className="case-summary">{cs.summary}</p>
 
-            <div className="case-tech-stack">
-              <small>TECHNICAL STACK:</small>
-              <div className="tech-tags">
-                {cs.techStack.map((tech) => (
-                  <span className="tech-tag" key={tech}>{tech}</span>
-                ))}
+              <div className="case-breakdown-grid">
+                <div className="case-col">
+                  <small>PROBLEM</small>
+                  <p>{cs.problem}</p>
+                </div>
+                <div className="case-col">
+                  <small>APPROACH</small>
+                  <p>{cs.approach}</p>
+                </div>
+                <div className="case-col">
+                  <small>SYSTEM BUILT</small>
+                  <p>{cs.systemBuilt}</p>
+                </div>
+                <div className="case-col">
+                  <small>EXECUTION</small>
+                  <p>{cs.execution}</p>
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
-      </div>
+
+              <div className="case-results-box">
+                <small>QUANTIFIABLE RESULTS</small>
+                <ul>
+                  {cs.results.map((res, i) => (
+                    <li key={i}>
+                      <span className="bullet-green">&check;</span> {res}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="case-tech-stack">
+                <small>TECHNICAL STACK:</small>
+                <div className="tech-tags">
+                  {cs.techStack.map((tech) => (
+                    <span className="tech-tag" key={tech}>{tech}</span>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <Footer />
     </main>
@@ -943,20 +1003,102 @@ export function DocsPage(): JSX.Element {
   )
 }
 
+export function AboutPage(): JSX.Element {
+  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+    e.preventDefault()
+    window.history.pushState({}, '', path)
+    window.dispatchEvent(new Event('popstate'))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  return (
+    <main className="docs-shell">
+      <HeaderTopbar />
+      <div className="about-page">
+        <header className="about-hero">
+          <p className="eyebrow"><span className="status-dot" /> ABOUT AINGA DATA LABS</p>
+          <h1>We make changing data dependable.</h1>
+          <p className="about-lede">
+            Ainga Data Labs is a data engineering and market intelligence company. We build the backend systems that turn fragmented, fast-changing sources into structured information teams can rely on.
+          </p>
+          <p className="about-focus">DATA ENGINEERING <span>•</span> BACKEND SYSTEMS <span>•</span> MARKET INTELLIGENCE</p>
+        </header>
+
+        <section className="about-story-grid" aria-label="ADL story and purpose">
+          <article className="about-story-card">
+            <span className="about-section-index">01 / OUR STORY</span>
+            <h2>Built for data that doesn&apos;t sit still.</h2>
+            <p>
+              Important business information is often scattered across websites, APIs, files and operational systems. Those sources change, disagree and arrive in formats that are difficult to use together.
+            </p>
+            <p>
+              ADL exists to engineer the collection, normalization and delivery layers that make this data useful beyond a one-off report or manual workflow.
+            </p>
+          </article>
+
+          <article className="about-story-card">
+            <span className="about-section-index">02 / WHY ADL EXISTS</span>
+            <h2>From unreliable sources to systems teams can trust.</h2>
+            <p>
+              Teams need more than data collected once. They need repeatable pipelines, clear schemas, source traceability and delivery that fits the decisions and products built on top.
+            </p>
+            <a className="about-inline-link" href="/solutions" onClick={(e) => handleNavigation(e, '/solutions')}>
+              Explore what ADL builds <span aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+        </section>
+
+        <section className="about-approach" aria-labelledby="about-approach-title">
+          <header className="about-section-heading">
+            <p className="eyebrow"><span className="status-dot" /> ENGINEERING APPROACH</p>
+            <h2 id="about-approach-title">How we approach engineering</h2>
+            <p>Design around source realities, make the data contract explicit, and plan for change from the start.</p>
+          </header>
+          <ol className="about-approach-list">
+            <li><span>01</span><div><h3>Understand the source</h3><p>Map access, structure, update patterns and failure modes before shaping the pipeline.</p></div></li>
+            <li><span>02</span><div><h3>Preserve the evidence</h3><p>Keep raw records and provenance so outputs can be traced back and transformations reviewed.</p></div></li>
+            <li><span>03</span><div><h3>Engineer reliable contracts</h3><p>Normalize entities, validate schemas and make downstream data predictable to consume.</p></div></li>
+            <li><span>04</span><div><h3>Design for change</h3><p>Monitor source drift, recover from failures and evolve pipelines without losing control of data quality.</p></div></li>
+          </ol>
+        </section>
+
+        <section className="about-principles" aria-labelledby="about-principles-title">
+          <header className="about-section-heading">
+            <p className="eyebrow"><span className="status-dot" /> OPERATING PRINCIPLES</p>
+            <h2 id="about-principles-title">What guides the work</h2>
+          </header>
+          <div className="about-principles-grid">
+            <article><h3>Traceability</h3><p>Know where data came from and how it changed.</p></article>
+            <article><h3>Schema-first</h3><p>Make structure and validation part of the system, not an afterthought.</p></article>
+            <article><h3>Operational reliability</h3><p>Build for monitoring, recovery and maintainable updates.</p></article>
+            <article><h3>Useful outcomes</h3><p>Deliver information in forms that support real decisions and products.</p></article>
+          </div>
+        </section>
+
+        <section className="about-team" aria-labelledby="about-team-title">
+          <div>
+            <p className="eyebrow"><span className="status-dot" /> WHO LEADS THE WORK</p>
+            <h2 id="about-team-title">Technical work, grounded in the problem.</h2>
+            <p>
+              ADL brings data engineering, backend implementation and market intelligence together around each project&apos;s sources, constraints and intended use. The approach is collaborative, technically specific and shaped by the people who need to use the data.
+            </p>
+          </div>
+          <div className="about-team-links">
+            <a className="button button-primary" href="/contact" onClick={(e) => handleNavigation(e, '/contact')}>
+              Talk with ADL <span aria-hidden="true">&rarr;</span>
+            </a>
+            <a className="about-inline-link" href="/docs" onClick={(e) => handleNavigation(e, '/docs')}>
+              View schema documentation <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </section>
+      </div>
+      <Footer />
+    </main>
+  )
+}
+
 export function LandingPage(): JSX.Element {
-  const [selectedNode, setSelectedNode] = useState<PipelineNodeId>('ingest')
-  const [sourceIndex, setSourceIndex] = useState<number>(0)
-  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null)
-
-  const selectedPipelineNode = PIPELINE_NODES.find((node) => node.id === selectedNode) ?? PIPELINE_NODES[0]
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSourceIndex((prev) => (prev + 1) % DYNAMIC_SOURCES.length)
-    }, 2000)
-    return () => clearInterval(interval)
-  }, [])
-
   return (
     <main className="site-shell">
       {/* INJECTED PRODUCTION HOVER LIGHTING CSS */}
@@ -1021,9 +1163,9 @@ export function LandingPage(): JSX.Element {
         <div className="hero-copy">
           <p className="eyebrow"><span className="status-dot" /> DATA ENGINEERING & MARKET INTELLIGENCE LABS</p>
           
-          <h1>Turn messy external data into reliable systems.</h1>
+          <h1>Turn fragmented web &amp; market data into production-ready systems</h1>
           <p className="hero-lede">
-            ADL builds and operates web extraction pipelines, data infrastructure, intelligence systems, and APIs that turn changing external data into clean, decision-ready feeds.
+            ADL builds the extraction pipelines, normalization layer, enrichment systems, and APIs that power pricing intelligence, lead ICPs, market research, and data products.
           </p>
           
           <p className="audience-tag-strip">
@@ -1031,82 +1173,67 @@ export function LandingPage(): JSX.Element {
           </p>
           
           <div className="hero-actions">
-            <a className="button button-primary" href="/contact">
-              Discuss a data problem <span aria-hidden="true">&rarr;</span>
+            <a className="button button-primary" href="/products">
+              Explore ADL products <span aria-hidden="true">&rarr;</span>
             </a>
-            <a className="button button-quiet" href="/products">
-              Explore our systems <span aria-hidden="true">&rarr;</span>
+            <a className="button button-quiet" href="/solutions">
+              Explore ADL Solutions <span aria-hidden="true">&rarr;</span>
             </a>
           </div>
         </div>
 
-        <div className="hero-visual">
+        <section className="hero-visual" aria-labelledby="pipeline-visualization-title">
           <div className="visual-header">
-            <span><span className="live-pulse" /> PIPELINE / INTERFACE PREVIEW</span>
+            <span id="pipeline-visualization-title"><span className="live-pulse" /> PIPELINE VISUALIZATION</span>
             <span>ADL / CORE-01</span>
           </div>
 
-          <div className="pipeline-map">
-            {PIPELINE_NODES.map((node, index) => {
-              const isFirstStep = index === 0
-              const labelText = isFirstStep ? DYNAMIC_SOURCES[sourceIndex] : node.name
-              const isHovered = hoveredNodeId === node.id
-              const isActive = selectedPipelineNode.id === node.id
-
-              return (
-                <div 
-                  key={node.id} 
-                  className={`pipeline-node ${isActive ? 'active' : ''}`}
-                  onClick={() => setSelectedNode(node.id)}
-                  onMouseEnter={() => setHoveredNodeId(node.id)}
-                  onMouseLeave={() => setHoveredNodeId(null)}
-                  style={{
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    cursor: 'pointer',
-                    backgroundColor: isHovered ? '#0f1f16' : undefined,
-                    borderColor: isHovered ? '#10b981' : undefined,
-                    boxShadow: isHovered ? '0 0 20px rgba(16, 185, 129, 0.35)' : undefined,
-                    transform: isHovered ? 'translateY(-1px)' : undefined,
-                  }}
-                >
-                  <div className="node-step">
-                    <span className="step-num">0{index + 1}</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                      <span 
-                        className="node-type" 
-                        style={{ 
-                          color: '#10b981', 
-                          fontWeight: 600,
-                          letterSpacing: '0.16em' 
-                        }}
-                      >
-                        {node.label}
-                      </span>
-                      <strong 
-                        className="node-label" 
-                        style={{ 
-                          letterSpacing: '0.16em', 
-                          color: '#10b981',
-                          fontWeight: 600,
-                          transition: 'color 0.3s ease, opacity 0.3s ease',
-                          display: 'inline-block'
-                        }}
-                      >
-                        {labelText}
-                      </strong>
-                    </div>
-                  </div>
-                  <span className="node-metric">{node.metric}</span>
-                </div>
-              )
-            })}
-
-            <div className="schema-inspector">
-              <span>SCHEMA / {selectedPipelineNode.schema}</span>
-              <strong>{selectedPipelineNode.fields}</strong>
-              <span className="inspector-state">READY</span>
-            </div>
+          <div className="pipeline-map" aria-label="Data pipeline stages">
+            {PIPELINE_STAGES.map((stage, index) => (
+              <article className="pipeline-stage" key={stage.title}>
+                <h2 className="pipeline-stage-title">
+                  <span className="pipeline-stage-number">0{index + 1}</span>
+                  {stage.title}
+                </h2>
+                <ul className="pipeline-stage-details">
+                  {stage.details.map((detail) => <li key={detail}>{detail}</li>)}
+                </ul>
+              </article>
+            ))}
           </div>
+        </section>
+      </section>
+
+      <section className="why-adl" aria-labelledby="why-adl-title">
+        <div className="why-adl-inner">
+          <header className="why-adl-header">
+            <p className="eyebrow"><span className="status-dot" /> BUILT FOR RELIABLE DATA</p>
+            <h2 id="why-adl-title">WHY ADL?</h2>
+          </header>
+
+          <ol className="why-adl-reasons">
+            <li><span>01</span><h3>Reliable ingestion</h3></li>
+            <li><span>02</span><h3>Schema-first systems</h3></li>
+            <li><span>03</span><h3>Observable pipelines</h3></li>
+            <li><span>04</span><h3>Designed for change</h3></li>
+          </ol>
+
+          <div className="why-adl-capabilities">
+            <article>
+              <h3>Extraction</h3>
+              <p>API ingestion, HTML parsing, browser automation, change detection, retries, proxy management</p>
+            </article>
+            <article>
+              <h3>Data engineering</h3>
+              <p>Schema normalization, entity resolution, deduplication, validation, lineage, incremental pipelines</p>
+            </article>
+            <article>
+              <h3>Delivery</h3>
+              <p>REST APIs, webhooks, scheduled exports, warehouse tables, typed schemas, dashboards</p>
+            </article>
+          </div>
+
+          <p className="why-adl-hook">Built from unreliable sources, designed for reliable downstream systems.</p>
         </div>
       </section>
 
@@ -1119,27 +1246,49 @@ export function LandingPage(): JSX.Element {
 // 4. SINGLE ROUTER ENTRY POINT
 // ==============================================================================
 
+const CANONICAL_ROUTE_REDIRECTS: Record<string, { pathname: string; hash?: string }> = {
+  '/services': { pathname: '/solutions' },
+  '/work': { pathname: '/solutions' },
+  '/insights': { pathname: '/solutions', hash: '#case-studies' },
+  '/legal': { pathname: '/terms' },
+}
+
+function getCanonicalPathname(pathname: string): string {
+  return CANONICAL_ROUTE_REDIRECTS[pathname]?.pathname ?? pathname
+}
+
 export default function App(): JSX.Element {
   const [currentPath, setCurrentPath] = useState<string>(
-    typeof window !== 'undefined' ? window.location.pathname : '/'
+    typeof window !== 'undefined' ? getCanonicalPathname(window.location.pathname) : '/'
   )
 
   useEffect(() => {
     const handleLocationChange = () => {
+      const redirect = CANONICAL_ROUTE_REDIRECTS[window.location.pathname]
+      if (redirect) {
+        const hash = redirect.hash ?? window.location.hash
+        const canonicalUrl = `${redirect.pathname}${hash}${window.location.search}`
+        window.history.replaceState({}, '', canonicalUrl)
+        const targetId = hash.slice(1)
+        if (targetId) {
+          window.requestAnimationFrame(() => {
+            document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' })
+          })
+        }
+      }
       setCurrentPath(window.location.pathname)
     }
 
+    handleLocationChange()
     window.addEventListener('popstate', handleLocationChange)
     return () => window.removeEventListener('popstate', handleLocationChange)
   }, [])
 
   if (currentPath === '/docs') return <DocsPage />
-  if (currentPath === '/services') return <ServicesPage />
+  if (currentPath === '/about') return <AboutPage />
+  if (currentPath === '/solutions') return <SolutionsPage />
   if (currentPath === '/products') return <ProductsPage />
-  if (currentPath === '/work') return <WorkPage />
-  if (currentPath === '/insights') return <InsightsPage />
   if (currentPath === '/contact') return <ContactPage />
-  if (currentPath === '/legal') return <LegalDocsApp />
   if (currentPath === '/terms') return <LegalDocsApp initialTab="terms" />
   if (currentPath === '/privacy') return <LegalDocsApp initialTab="privacy" />
   if (currentPath === '/ssip/api-demo') return <SsipApiDemo />
