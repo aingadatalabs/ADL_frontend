@@ -7,14 +7,14 @@
   --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'DM Mono', monospace;
 
-  --bg-primary: #101412;
-  --bg-card: #151c18;
-  --text-primary: #eef3f0;
-  --text-muted: #78877f;
-  --text-body: #9baaa2;
+  --bg-primary: #000000;
+  --bg-card: #0b0b0b;
+  --text-primary: #ffffff;
+  --text-muted: #b5b5b5;
+  --text-body: #d4d4d4;
   --accent-cyan: #b9e4c9;
-  --border-dark: #34433b;
-  --border-accent: #557060;
+  --border-dark: #2a2a2a;
+  --border-accent: #555555;
 }
 
 * {
@@ -53,7 +53,7 @@ button {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: radial-gradient(circle at 78% 12%, rgba(20, 30, 25, 0.4), transparent 50%);
+  background: radial-gradient(circle at 78% 12%, rgba(255, 255, 255, 0.035), transparent 50%), #000000;
 }
 
 .topbar {
@@ -84,7 +84,7 @@ button {
   place-items: center;
   width: 34px;
   height: 34px;
-  color: #101412;
+  color: #000000;
   background-color: var(--accent-cyan);
   font-family: var(--font-mono);
   font-size: 12px;
@@ -126,7 +126,7 @@ button {
 .button-primary,
 .nav-cta-primary {
   background: var(--accent-cyan);
-  color: #101412;
+  color: #000000;
   font-weight: 600;
   border: none;
 }
@@ -267,7 +267,7 @@ button {
   align-items: center;
   justify-content: space-between;
   font-size: 12px;
-  background: #1a221e;
+  background: #0b0b0b;
   padding: 6px 10px;
   border-radius: 4px;
 }
@@ -336,7 +336,7 @@ button {
 }
 
 .pipeline-stage:hover {
-  background: #0f1f16;
+  background: #111111;
   border-color: #10b981;
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
   transform: translateY(-1px);
@@ -471,7 +471,7 @@ button {
 
 .why-adl-capabilities article:hover {
   border-color: #10b981;
-  background: #0f1f16;
+  background: #111111;
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
   transform: translateY(-2px);
 }
@@ -928,7 +928,7 @@ button {
 
 .run-request {
   background: var(--accent-cyan);
-  color: #101412;
+  color: #000000;
   font-weight: 600;
   border: none;
 }
@@ -1402,7 +1402,7 @@ button {
 
 .docs-method {
   background: var(--accent-cyan);
-  color: #101412;
+  color: #000000;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
@@ -1475,7 +1475,7 @@ button {
 
 .docs-run {
   background: var(--accent-cyan);
-  color: #101412;
+  color: #000000;
   font-weight: 600;
   border: none;
   padding: 8px 16px;
@@ -1899,7 +1899,7 @@ button {
 
 /* Service Card Container */
 .services-card-block {
-  background: #0d0e10;
+  background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 2rem;
@@ -1960,7 +1960,7 @@ button {
 
 .solutions-build-item:hover {
   border-color: #10b981;
-  background: #0f1f16;
+  background: #111111;
   color: #a7f3d0;
   box-shadow: 0 0 18px rgba(16, 185, 129, 0.25);
   transform: translateY(-2px);
@@ -2144,7 +2144,7 @@ button {
 }
 
 .product-portfolio-card {
-  background: #0d0e10;
+  background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 2rem;
@@ -2305,7 +2305,7 @@ button {
 }
 
 .insight-card {
-  background: #0d0e10;
+  background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 2rem;
@@ -2434,7 +2434,7 @@ button {
 }
 
 .case-study-card {
-  background: #0d0e10;
+  background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 2.2rem;
@@ -2563,7 +2563,7 @@ button {
 }
 
 .contact-intake-form {
-  background: #0d0e10;
+  background: #0b0b0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 2.5rem;
@@ -2616,7 +2616,7 @@ button {
 }
 
 .form-field select {
-  background-color: #0d0e10;
+  background-color: #0b0b0b;
 }
 
 .form-field input:focus,
@@ -2634,7 +2634,7 @@ button {
 }
 
 .form-success-card {
-  background: #0d0e10;
+  background: #0b0b0b;
   border: 1px solid rgba(0, 255, 136, 0.3);
   border-radius: 8px;
   padding: 3rem;
@@ -2708,7 +2708,7 @@ button {
 }
 
 .pipeline-node.interactive-card:hover {
-  background-color: #0d1a12 !important;
+  background-color: #111111 !important;
   border-color: #10b981 !important;
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.35) !important;
   transform: translateY(-1px);

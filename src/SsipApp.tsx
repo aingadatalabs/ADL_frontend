@@ -124,8 +124,8 @@ export default function SsipApp(): JSX.Element {
     <div className="ssip-app-shell">
       <style>{`
         .ssip-app-shell {
-          background-color: #030705;
-          color: #d1d5db;
+          background-color: #000000;
+          color: #ffffff;
           font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           min-height: 100vh;
           padding: 2rem 1.5rem 0;
@@ -259,7 +259,7 @@ export default function SsipApp(): JSX.Element {
         }
 
         .ssip-metric-card {
-          background-color: #09110d;
+          background-color: #0b0b0b;
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 8px;
           padding: 1.5rem;
@@ -319,7 +319,7 @@ export default function SsipApp(): JSX.Element {
 
         .ssip-search-bar {
           width: 100%;
-          background-color: #09110d;
+          background-color: #0b0b0b;
           border: 1px solid rgba(16, 185, 129, 0.3);
           color: #ffffff;
           padding: 0.85rem 1.15rem;
@@ -331,7 +331,7 @@ export default function SsipApp(): JSX.Element {
 
         .ssip-table-wrapper {
           overflow-x: auto;
-          background-color: #09110d;
+          background-color: #0b0b0b;
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 8px;
           margin-bottom: 3.5rem;
@@ -501,7 +501,7 @@ export default function SsipApp(): JSX.Element {
         )}
 
         {activeTab === 'pricing' && (
-          <section style={{ backgroundColor: '#09110d', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px', padding: '2rem', marginBottom: '3.5rem' }}>
+          <section style={{ backgroundColor: '#0b0b0b', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px', padding: '2rem', marginBottom: '3.5rem' }}>
             <h2 style={{ color: '#ffffff', margin: '0 0 0.5rem' }}>Pricing & Margin Delta Analytics</h2>
             <p style={{ color: '#9ca3af', margin: '0 0 1.5rem' }}>
               Real-time variance signals against aggregated supplement market medians across whey isolates, pre-workouts, and recovery formulas.

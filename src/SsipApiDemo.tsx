@@ -243,8 +243,8 @@ export default function SsipApiDemo(): JSX.Element {
     <div className="ssip-demo-shell">
       <style>{`
         .ssip-demo-shell {
-          background-color: #030705;
-          color: #d1d5db;
+          background-color: #000000;
+          color: #ffffff;
           font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           min-height: 100vh;
           padding: 2rem 1rem 0;
@@ -294,7 +294,7 @@ export default function SsipApiDemo(): JSX.Element {
         }
 
         .ssip-card {
-          background-color: #09110d;
+          background-color: #0b0b0b;
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 8px;
           padding: 1.5rem;
@@ -315,7 +315,7 @@ export default function SsipApiDemo(): JSX.Element {
 
         .ssip-select, .ssip-input {
           width: 100%;
-          background-color: #030705;
+          background-color: #000000;
           border: 1px solid rgba(16, 185, 129, 0.4);
           color: #ffffff;
           padding: 0.65rem 0.85rem;
@@ -403,7 +403,7 @@ export default function SsipApiDemo(): JSX.Element {
         }
 
         .code-block {
-          background-color: #030705;
+          background-color: #000000;
           border: 1px solid rgba(255, 255, 255, 0.08);
           padding: 1.25rem;
           border-radius: 6px;
@@ -573,7 +573,7 @@ export default function SsipApiDemo(): JSX.Element {
           </div>
         </div>
 
-        <section style={{ textAlign: 'center', backgroundColor: '#09110d', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '2.5rem', borderRadius: '8px', marginBottom: '3rem' }}>
+        <section style={{ textAlign: 'center', backgroundColor: '#0b0b0b', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '2.5rem', borderRadius: '8px', marginBottom: '3rem' }}>
           <h2 style={{ color: '#ffffff', margin: '0 0 0.5rem' }}>Need Full Production API Access?</h2>
           <p style={{ color: '#9ca3af', margin: '0 0 1.5rem' }}>Get dedicated API keys, full store coverage across all 56 brands, and custom webhook feeds.</p>
           <a

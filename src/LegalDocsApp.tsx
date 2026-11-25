@@ -42,8 +42,8 @@ export default function LegalDocsApp({ initialTab = 'terms' }: LegalDocsAppProps
     <div className="legal-shell">
       <style>{`
         .legal-shell {
-          background-color: #030705;
-          color: #d1d5db;
+          background-color: #000000;
+          color: #ffffff;
           font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           min-height: 100vh;
           display: flex;
@@ -84,7 +84,7 @@ export default function LegalDocsApp({ initialTab = 'terms' }: LegalDocsAppProps
         }
 
         .legal-content {
-          background-color: #09110d;
+          background-color: #0b0b0b;
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 8px;
           padding: 3rem 2.5rem;
